@@ -1,0 +1,2 @@
+"use client";
+export default function ErrorPage({ reset }: { error: Error & { digest?: string }; reset: () => void }) { return <div className="container section min-h-[45vh] text-center"><h1 className="heading-lg">Une erreur est survenue.</h1><p className="mt-4 text-black/60">Veuillez réessayer. Si le problème persiste, contactez Hora.</p><button className="mt-7 bg-ink px-7 py-3 font-bold text-white" onClick={reset}>Réessayer</button></div>; }

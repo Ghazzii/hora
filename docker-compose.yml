@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hora
+      POSTGRES_PASSWORD: hora_dev_password
+      POSTGRES_DB: hora
+    ports:
+      - "5432:5432"
+    volumes:
+      - hora_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hora -d hora"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  hora_postgres_data:
