@@ -45,7 +45,7 @@ export function CheckoutForm({ locale }: { locale: Locale }) {
         addressLine1: form.get("addressLine1"),
         addressLine2: form.get("addressLine2"),
         deliveryInstructions: form.get("deliveryInstructions"),
-        customerNotes: form.get("customerNotes"),
+        customerNotes: form.get("customerNotes") ?? "",
         codAccepted: form.get("codAccepted") === "on",
         items: cart.items.map((item) => ({ variantId: item.variantId, quantity: item.quantity })),
       }),
