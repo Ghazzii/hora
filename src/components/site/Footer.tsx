@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Locale } from "@/lib/i18n";
 
 export function Footer({ locale }: { locale: Locale }) {
-  const links = [
+  const links: Array<[string, string]> = [
     [locale === "fr" ? "À propos" : "About", `/${locale}/a-propos`],
     [locale === "fr" ? "Contact" : "Contact", `/${locale}/contact`],
     [locale === "fr" ? "Livraison & retours" : "Delivery & returns", `/${locale}/livraison-retours`],
