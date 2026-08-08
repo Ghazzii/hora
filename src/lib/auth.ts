@@ -62,6 +62,7 @@ export async function getCurrentUser() {
 export async function requireUser(locale: "fr" | "en" = "fr") {
   const user = await getCurrentUser();
   if (!user) redirect(`/${locale}/compte/connexion`);
+  if (!user) throw new Error("Authentication redirect failed");
   return user;
 }
 
