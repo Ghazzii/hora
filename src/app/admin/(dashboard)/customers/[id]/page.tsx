@@ -1,0 +1,7 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { db } from "@/lib/db";
+import { formatTnd } from "@/lib/money";
+import { Table, Td, Th } from "@/components/ui/Table";
+
+export default async function CustomerDetailPage({ params }: { params: Promise<{ id: string }> }) { const { id } = await params; const customer = await db.user.findUnique({ where: { id }, include: { addresses: true, orders: { orderBy: { createdAt: "desc" } } } }); if (!customer) notFound(); return <><p className="eyebrow">Customer</p><h1 className="mt-2 font-display text-4xl">{customer.firstName} {customer.lastName}</h1><div className="mt-7 grid gap-6 xl:grid-cols-[350px_1fr]"><aside className="admin-card h-fit"><p>{customer.email}<br />{customer.phone}</p><h2 className="mt-6 font-bold">Saved addresses</h2>{customer.addresses.map((address) => <address key={address.id} className="mt-3 border-t pt-3 text-sm not-italic">{address.addressLine1}<br />{address.postalCode} {address.city}, {address.governorate}</address>)}</aside><section className="admin-card"><h2 className="font-display text-2xl">Order history</h2><Table className="mt-4"><thead><tr><Th>Order</Th><Th>Date</Th><Th>Status</Th><Th>Total</Th></tr></thead><tbody>{customer.orders.map((order) => <tr key={order.id}><Td><Link className="font-bold underline" href={`/admin/orders/${order.id}`}>{order.orderNumber}</Link></Td><Td>{order.createdAt.toLocaleDateString("fr-TN")}</Td><Td>{order.status}</Td><Td>{formatTnd(order.totalMillimes)}</Td></tr>)}</tbody></Table></section></div></>; }

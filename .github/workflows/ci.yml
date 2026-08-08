@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "codex/**"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: hora
+          POSTGRES_PASSWORD: hora_dev_password
+          POSTGRES_DB: hora
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U hora -d hora"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      DATABASE_URL: postgresql://hora:hora_dev_password@localhost:5432/hora?schema=public
+      SESSION_SECRET: ci-only-secret-that-is-longer-than-thirty-two-characters
+      NEXT_PUBLIC_BASE_URL: http://127.0.0.1:3000
+      SEED_ADMIN_EMAIL: admin@hora.tn
+      SEED_ADMIN_PASSWORD: HoraAdmin123!
+      SEED_CUSTOMER_EMAIL: client@hora.tn
+      SEED_CUSTOMER_PASSWORD: HoraClient123!
+      CI: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run db:generate
+      - run: npm run db:migrate
+      - run: npm run db:seed
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e -- --project=chromium

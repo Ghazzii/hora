@@ -1,0 +1,14 @@
+node_modules
+.next
+out
+dist
+coverage
+playwright-report
+test-results
+.env
+.env.local
+.env.*.local
+!.env.example
+*.log
+.DS_Store
+.prisma
