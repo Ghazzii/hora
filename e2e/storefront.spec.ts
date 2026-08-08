@@ -29,7 +29,18 @@ test("COD checkout persists an order that an admin can confirm", async ({ page }
   await page.getByLabel("Code postal").fill("2070");
   await page.getByLabel("Adresse", { exact: true }).fill("10 avenue Habib Bourguiba");
   await page.getByRole("checkbox").check();
+  const orderResponsePromise = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === "/api/orders" &&
+      response.request().method() === "POST",
+  );
   await page.getByRole("button", { name: "Confirmer la commande" }).click();
+  const orderResponse = await orderResponsePromise;
+  if (!orderResponse.ok()) {
+    throw new Error(
+      `Order API returned ${orderResponse.status()}: ${await orderResponse.text()}`,
+    );
+  }
 
   await expect(page.getByRole("heading", { name: "Commande bien reçue" })).toBeVisible();
   const orderNumber = (await page.locator("p.eyebrow").textContent())?.trim();
