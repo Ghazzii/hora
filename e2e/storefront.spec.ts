@@ -12,7 +12,7 @@ test("COD checkout persists an order that an admin can confirm", async ({ page }
   test.setTimeout(60_000);
 
   await page.goto("/fr/montres");
-  await page.locator("article").first().getByRole("link").first().click();
+  await page.locator("article").first().locator("a").filter({ hasText: /.+/ }).first().click();
   await page.getByRole("button", { name: "Ajouter au panier" }).click();
   await expect(page.getByRole("button", { name: "Ajoutée au panier" })).toBeVisible();
 
