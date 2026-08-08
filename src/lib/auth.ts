@@ -68,6 +68,7 @@ export async function requireUser(locale: "fr" | "en" = "fr") {
 export async function requireAdmin() {
   const user = await getCurrentUser();
   if (!canAccessAdmin(user)) redirect("/admin/login");
+  if (!user) throw new Error("Admin authentication redirect failed");
   return user;
 }
 
