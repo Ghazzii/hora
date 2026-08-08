@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { OrderStatus, PaymentStatus } from "@prisma/client";
+import { PaymentStatus } from "@prisma/client";
 import { db } from "@/lib/db";
 import { formatTnd } from "@/lib/money";
 import { ORDER_TRANSITIONS } from "@/lib/order-rules";
