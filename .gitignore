@@ -12,3 +12,5 @@ test-results
 *.log
 .DS_Store
 .prisma
+*.db
+*.db-journal

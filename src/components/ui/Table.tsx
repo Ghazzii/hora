@@ -1,6 +1,7 @@
 import type {
-  HTMLAttributes,
   TableHTMLAttributes,
+  TdHTMLAttributes,
+  ThHTMLAttributes,
 } from "react";
 import { cn } from "@/lib/utils";
 
@@ -21,7 +22,7 @@ export function Table({
 export function Th({
   className,
   ...props
-}: HTMLAttributes<HTMLTableCellElement>) {
+}: ThHTMLAttributes<HTMLTableCellElement>) {
   return (
     <th
       className={cn(
@@ -36,7 +37,7 @@ export function Th({
 export function Td({
   className,
   ...props
-}: HTMLAttributes<HTMLTableCellElement>) {
+}: TdHTMLAttributes<HTMLTableCellElement>) {
   return (
     <td
       className={cn("border-b border-black/10 px-4 py-3 align-top", className)}

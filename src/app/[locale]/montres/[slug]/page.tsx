@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/site/ProductCard";
 import { ProductPurchase } from "@/components/site/ProductPurchase";
@@ -9,6 +10,42 @@ import { formatTnd } from "@/lib/money";
 import { isLocale } from "@/lib/i18n";
 import { safeJson } from "@/lib/utils";
 import { publicEnv } from "@/lib/env";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>;
+}): Promise<Metadata> {
+  const { locale, slug } = await params;
+  if (!isLocale(locale)) return {};
+  const product = await getProductBySlug(slug);
+  if (!product) return {};
+
+  const french = locale === "fr";
+  const name = french ? product.nameFr : product.nameEn;
+  const description = french ? product.descriptionFr : product.descriptionEn;
+  const localizedSlug = french ? product.slugFr : product.slugEn;
+  const image = product.images[0]?.url;
+
+  return {
+    title: name,
+    description,
+    alternates: {
+      canonical: `/${locale}/montres/${localizedSlug}`,
+      languages: {
+        fr: `/fr/montres/${product.slugFr}`,
+        en: `/en/montres/${product.slugEn}`,
+      },
+    },
+    openGraph: {
+      type: "website",
+      locale: french ? "fr_TN" : "en_TN",
+      title: name,
+      description,
+      images: image ? [{ url: image, alt: name }] : [],
+    },
+  };
+}
 
 export default async function ProductPage({
   params,

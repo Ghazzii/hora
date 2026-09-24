@@ -1,8 +1,26 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/site/ProductCard";
 import { getCatalog, getCatalogFacets } from "@/lib/products";
 import { isLocale } from "@/lib/i18n";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const french = locale === "fr";
+  return {
+    title: french ? "Toutes les montres" : "All watches",
+    alternates: {
+      canonical: `/${locale}/montres`,
+      languages: { fr: "/fr/montres", en: "/en/montres" },
+    },
+  };
+}
 
 function valueOf(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;

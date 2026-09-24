@@ -125,9 +125,9 @@ export async function saveProductAction(form: FormData) {
   await requireAdmin();
   const productId = optionalText(form, "productId");
   const nameFr = z.string().min(2).max(120).parse(text(form, "nameFr"));
-  const nameEn = z.string().min(2).max(120).parse(text(form, "nameEn"));
+  const nameEn = optionalText(form, "nameEn") ?? nameFr;
   const categoryId = z.string().uuid().parse(text(form, "categoryId"));
-  const sku = z.string().min(3).max(60).parse(text(form, "sku")).toUpperCase();
+  const sku = (optionalText(form, "sku") ?? `HORA-${slugify(nameFr)}`).slice(0, 60).toUpperCase();
   const images = text(form, "imageUrls").split(/\r?\n/).map((item) => item.trim()).filter(Boolean).slice(0, 8);
   if (!images.length) images.push("/images/watch-1.svg");
   const productData = {
@@ -137,16 +137,16 @@ export async function saveProductAction(form: FormData) {
     slugEn: slugify(optionalText(form, "slugEn") ?? nameEn),
     nameFr,
     nameEn,
-    descriptionFr: z.string().min(20).max(3000).parse(text(form, "descriptionFr")),
-    descriptionEn: z.string().min(20).max(3000).parse(text(form, "descriptionEn")),
-    brand: z.string().min(1).max(80).parse(text(form, "brand")),
-    gender: z.string().min(1).max(40).parse(text(form, "gender")),
-    movement: z.string().min(1).max(80).parse(text(form, "movement")),
-    caseMaterial: z.string().min(1).max(120).parse(text(form, "caseMaterial")),
-    strapMaterial: z.string().min(1).max(120).parse(text(form, "strapMaterial")),
-    style: z.string().min(1).max(80).parse(text(form, "style")),
-    color: z.string().min(1).max(80).parse(text(form, "color")),
-    waterResistance: z.string().min(1).max(80).parse(text(form, "waterResistance")),
+    descriptionFr: (optionalText(form, "descriptionFr") ?? `Découvrez ${nameFr}, une montre Hora pensée pour le quotidien.`).slice(0, 3000),
+    descriptionEn: (optionalText(form, "descriptionEn") ?? `Discover ${nameEn}, a Hora watch designed for everyday life.`).slice(0, 3000),
+    brand: optionalText(form, "brand") ?? "Hora",
+    gender: optionalText(form, "gender") ?? "Unisex",
+    movement: optionalText(form, "movement") ?? "Quartz",
+    caseMaterial: optionalText(form, "caseMaterial") ?? "Stainless steel",
+    strapMaterial: optionalText(form, "strapMaterial") ?? "Leather",
+    style: optionalText(form, "style") ?? "Classic",
+    color: optionalText(form, "color") ?? "Black",
+    waterResistance: optionalText(form, "waterResistance") ?? "5 ATM",
     featured: form.get("featured") === "on",
     active: form.get("active") === "on",
   };
@@ -164,9 +164,9 @@ export async function saveProductAction(form: FormData) {
       await db.productVariant.update({
         where: { id: variantId },
         data: {
-          sku: text(form, "variantSku").toUpperCase(),
-          labelFr: text(form, "variantLabelFr"),
-          labelEn: text(form, "variantLabelEn"),
+          sku: (optionalText(form, "variantSku") ?? `${sku}-STD`).toUpperCase(),
+          labelFr: optionalText(form, "variantLabelFr") ?? "Standard",
+          labelEn: optionalText(form, "variantLabelEn") ?? "Standard",
           priceMillimes: millimes(form, "priceDt"),
           compareAtPriceMillimes: optionalText(form, "compareAtDt") ? millimes(form, "compareAtDt") : null,
           lowStockThreshold: z.coerce.number().int().min(0).parse(text(form, "lowStockThreshold")),
@@ -183,9 +183,9 @@ export async function saveProductAction(form: FormData) {
         },
         variants: {
           create: {
-            sku: text(form, "variantSku").toUpperCase(),
-            labelFr: text(form, "variantLabelFr"),
-            labelEn: text(form, "variantLabelEn"),
+            sku: (optionalText(form, "variantSku") ?? `${sku}-STD`).toUpperCase(),
+            labelFr: optionalText(form, "variantLabelFr") ?? "Standard",
+            labelEn: optionalText(form, "variantLabelEn") ?? "Standard",
             attributes: {},
             priceMillimes: millimes(form, "priceDt"),
             stock: z.coerce.number().int().min(0).parse(text(form, "initialStock")),

@@ -31,7 +31,7 @@ const productInclude = {
 
 export async function getCatalog(query: CatalogQuery = {}) {
   const pageSize = Math.min(24, Math.max(1, query.pageSize ?? 12));
-  const page = Math.max(1, query.page ?? 1);
+  const requestedPage = Number.isFinite(query.page) ? Math.max(1, Math.floor(query.page ?? 1)) : 1;
   const where: Prisma.ProductWhereInput = {
     active: true,
     ...(query.search
@@ -86,12 +86,17 @@ export async function getCatalog(query: CatalogQuery = {}) {
     return b.createdAt.getTime() - a.createdAt.getTime();
   });
 
+  const pageCount = Math.max(1, Math.ceil(products.length / pageSize));
+  // Never return a blank catalog merely because a stale or hand-written URL
+  // requests a page beyond the filtered result set.
+  const page = Math.min(requestedPage, pageCount);
+
   return {
     items: products.slice((page - 1) * pageSize, page * pageSize),
     total: products.length,
     page,
     pageSize,
-    pageCount: Math.max(1, Math.ceil(products.length / pageSize)),
+    pageCount,
   };
 }
 
