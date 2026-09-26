@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
+import { catalogVariantWhere } from "@/lib/catalog-filters";
 
 export type CatalogQuery = {
   search?: string;
@@ -15,13 +16,17 @@ export type CatalogQuery = {
   pageSize?: number;
 };
 
-const productInclude = {
-  category: true,
+const cardInclude = {
   images: { orderBy: { sortOrder: "asc" as const } },
   variants: {
     where: { active: true },
     orderBy: { priceMillimes: "asc" as const },
   },
+} satisfies Prisma.ProductInclude;
+
+const productInclude = {
+  ...cardInclude,
+  category: true,
   reviews: {
     where: { status: "APPROVED" as const },
     include: { user: { select: { firstName: true } } },
@@ -54,25 +59,40 @@ export async function getCatalog(query: CatalogQuery = {}) {
     ...(query.brand ? { brand: query.brand } : {}),
     ...(query.gender ? { gender: query.gender } : {}),
     ...(query.movement ? { movement: query.movement } : {}),
-    ...((query.minPrice || query.maxPrice || query.available)
+    ...((query.minPrice !== undefined || query.maxPrice !== undefined || query.available)
       ? {
           variants: {
-            some: {
-              active: true,
-              ...(query.minPrice
-                ? { priceMillimes: { gte: query.minPrice } }
-                : {}),
-              ...(query.maxPrice
-                ? { priceMillimes: { lte: query.maxPrice } }
-                : {}),
-              ...(query.available ? { stock: { gt: 0 } } : {}),
-            },
+            some: catalogVariantWhere(query),
           },
         }
       : {}),
   };
 
-  const products = await db.product.findMany({ where, include: productInclude });
+  const filteredInclude = {
+    ...cardInclude,
+    variants: {
+      ...cardInclude.variants,
+      where: catalogVariantWhere(query),
+    },
+  } satisfies Prisma.ProductInclude;
+
+  if (query.sort !== "price-asc" && query.sort !== "price-desc") {
+    const total = await db.product.count({ where });
+    const pageCount = Math.max(1, Math.ceil(total / pageSize));
+    const page = Math.min(requestedPage, pageCount);
+    const items = await db.product.findMany({
+      where,
+      include: filteredInclude,
+      orderBy: query.sort === "rating"
+        ? [{ averageRating: "desc" }, { createdAt: "desc" }]
+        : [{ createdAt: "desc" }],
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    });
+    return { items, total, page, pageSize, pageCount };
+  }
+
+  const products = await db.product.findMany({ where, include: filteredInclude });
   products.sort((a, b) => {
     if (query.sort === "price-asc") {
       return (a.variants[0]?.priceMillimes ?? Infinity) -
@@ -82,8 +102,7 @@ export async function getCatalog(query: CatalogQuery = {}) {
       return (b.variants[0]?.priceMillimes ?? 0) -
         (a.variants[0]?.priceMillimes ?? 0);
     }
-    if (query.sort === "rating") return b.averageRating - a.averageRating;
-    return b.createdAt.getTime() - a.createdAt.getTime();
+    return 0;
   });
 
   const pageCount = Math.max(1, Math.ceil(products.length / pageSize));
@@ -103,7 +122,7 @@ export async function getCatalog(query: CatalogQuery = {}) {
 export function getFeaturedProducts(limit = 6) {
   return db.product.findMany({
     where: { active: true, featured: true },
-    include: productInclude,
+    include: cardInclude,
     orderBy: [{ averageRating: "desc" }, { createdAt: "desc" }],
     take: limit,
   });
@@ -122,7 +141,7 @@ export function getProductBySlug(slug: string) {
 export function getRelatedProducts(categoryId: string, productId: string) {
   return db.product.findMany({
     where: { active: true, categoryId, id: { not: productId } },
-    include: productInclude,
+    include: cardInclude,
     take: 4,
   });
 }

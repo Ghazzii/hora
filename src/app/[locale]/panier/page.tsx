@@ -8,7 +8,6 @@ import { useCart } from "@/providers/CartProvider";
 import { formatTnd } from "@/lib/money";
 import { DELIVERY_FEE_MILLIMES } from "@/lib/constants";
 import { isLocale } from "@/lib/i18n";
-import { Button } from "@/components/ui/Button";
 
 export default function CartPage() {
   const params = useParams<{ locale: string }>();
@@ -36,14 +35,14 @@ export default function CartPage() {
                 <p className="mt-1 text-sm text-black/55">{locale === "fr" ? item.variantLabelFr : item.variantLabelEn}</p>
                 <p className="mt-3 font-semibold">{formatTnd(item.unitPriceMillimes, locale)}</p>
                 <div className="mt-4 inline-flex items-center border border-black/15">
-                  <button className="p-2" onClick={() => cart.setQuantity(item.variantId, item.quantity - 1)} aria-label="Decrease"><Minus size={15} /></button>
-                  <span className="min-w-8 text-center text-sm">{item.quantity}</span>
-                  <button className="p-2" onClick={() => cart.setQuantity(item.variantId, item.quantity + 1)} aria-label="Increase"><Plus size={15} /></button>
+                  <button type="button" className="p-2 disabled:opacity-30" disabled={item.quantity <= 1} onClick={() => cart.setQuantity(item.variantId, item.quantity - 1)} aria-label={locale === "fr" ? `Diminuer la quantité de ${item.productNameFr}` : `Decrease quantity of ${item.productNameEn}`}><Minus size={15} /></button>
+                  <span className="min-w-8 text-center text-sm" aria-live="polite">{item.quantity}</span>
+                  <button type="button" className="p-2 disabled:opacity-30" disabled={item.quantity >= Math.min(10, item.maxStock)} onClick={() => cart.setQuantity(item.variantId, item.quantity + 1)} aria-label={locale === "fr" ? `Augmenter la quantité de ${item.productNameFr}` : `Increase quantity of ${item.productNameEn}`}><Plus size={15} /></button>
                 </div>
               </div>
               <div className="flex items-start justify-between gap-4 sm:block sm:text-right">
                 <p className="font-bold">{formatTnd(item.unitPriceMillimes * item.quantity, locale)}</p>
-                <button className="mt-4 text-red-700" onClick={() => cart.removeItem(item.variantId)} aria-label="Remove"><Trash2 size={18} /></button>
+                <button type="button" className="mt-4 text-red-700" onClick={() => cart.removeItem(item.variantId)} aria-label={locale === "fr" ? `Retirer ${item.productNameFr}` : `Remove ${item.productNameEn}`}><Trash2 size={18} /></button>
               </div>
             </article>
           ))}
@@ -55,7 +54,7 @@ export default function CartPage() {
             <div className="flex justify-between"><dt>{locale === "fr" ? "Livraison" : "Delivery"}</dt><dd>{formatTnd(DELIVERY_FEE_MILLIMES, locale)}</dd></div>
             <div className="flex justify-between border-t border-black/10 pt-4 text-lg font-bold"><dt>Total</dt><dd>{formatTnd(cart.subtotalMillimes + DELIVERY_FEE_MILLIMES, locale)}</dd></div>
           </dl>
-          <Link href={`/${locale}/commande`} className="mt-6 block"><Button size="lg" className="w-full">{locale === "fr" ? "Passer la commande" : "Checkout"}</Button></Link>
+          <Link href={`/${locale}/commande`} className="mt-6 flex min-h-12 items-center justify-center bg-ink px-7 text-base font-semibold text-white transition hover:bg-gold-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold">{locale === "fr" ? "Passer la commande" : "Checkout"}</Link>
           <p className="mt-4 text-xs leading-5 text-black/55">{locale === "fr" ? "Aucun paiement en ligne. Vous payez au livreur après confirmation téléphonique." : "No online payment. You pay the courier after phone confirmation."}</p>
         </aside>
       </div>

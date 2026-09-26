@@ -28,9 +28,12 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setProductIds(JSON.parse(stored) as string[]);
+      if (stored) {
+        const parsed: unknown = JSON.parse(stored);
+        if (Array.isArray(parsed)) setProductIds([...new Set(parsed.filter((id): id is string => typeof id === "string" && /^[0-9a-f-]{36}$/i.test(id)))].slice(0, 50));
+      }
     } catch {
-      localStorage.removeItem(STORAGE_KEY);
+      try { localStorage.removeItem(STORAGE_KEY); } catch { /* Storage may be disabled. */ }
     } finally {
       setHydrated(true);
     }
@@ -38,7 +41,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (hydrated) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(productIds));
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(productIds)); } catch { /* Keep the in-memory wishlist. */ }
     }
   }, [productIds, hydrated]);
 

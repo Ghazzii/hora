@@ -3,7 +3,9 @@ import { ATTRIBUTION_COOKIE_NAME } from "@/lib/constants";
 import { sanitizeAttribution } from "@/lib/attribution";
 
 export function middleware(request: NextRequest) {
-  const response = NextResponse.next();
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-hora-locale", request.nextUrl.pathname.startsWith("/en") ? "en" : "fr");
+  const response = NextResponse.next({ request: { headers: requestHeaders } });
   const params = request.nextUrl.searchParams;
   const hasCampaignData = [
     "utm_source",

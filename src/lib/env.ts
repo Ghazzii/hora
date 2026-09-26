@@ -24,4 +24,6 @@ export function serverEnv() {
 export const publicEnv = {
   baseUrl: process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000",
   metaPixelId: process.env.NEXT_PUBLIC_META_PIXEL_ID,
+  contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL,
+  contactPhone: process.env.NEXT_PUBLIC_CONTACT_PHONE,
 };

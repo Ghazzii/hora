@@ -13,7 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     where: { active: true },
     select: { slugFr: true, slugEn: true, updatedAt: true },
     orderBy: { updatedAt: "desc" },
-  });
+  }).catch(() => []);
   const staticPaths = [
     { path: "", priority: 1 },
     { path: "/montres", priority: 0.9 },
@@ -26,7 +26,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticEntries: MetadataRoute.Sitemap = locales.flatMap((locale) =>
     staticPaths.map(({ path, priority }) => ({
       url: `${baseUrl}/${locale}${path}`,
-      lastModified: new Date(),
       changeFrequency: path === "/montres" ? "daily" : "weekly",
       priority,
     })),

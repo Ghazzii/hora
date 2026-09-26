@@ -26,6 +26,12 @@ function valueOf(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+function priceFilter(value: string | undefined) {
+  if (!value || !/^\d{1,7}(?:\.\d{1,3})?$/.test(value)) return undefined;
+  const millimes = Math.round(Number(value) * 1000);
+  return Number.isSafeInteger(millimes) ? millimes : undefined;
+}
+
 export default async function CatalogPage({
   params,
   searchParams,
@@ -35,16 +41,17 @@ export default async function CatalogPage({
 }) {
   const [{ locale }, query] = await Promise.all([params, searchParams]);
   if (!isLocale(locale)) notFound();
-  const search = valueOf(query.q);
+  const search = valueOf(query.q)?.trim().slice(0, 100);
   const category = valueOf(query.category);
   const brand = valueOf(query.brand);
   const gender = valueOf(query.gender);
   const movement = valueOf(query.movement);
-  const sort = valueOf(query.sort) as "newest" | "rating" | "price-asc" | "price-desc" | undefined;
+  const requestedSort = valueOf(query.sort);
+  const sort = requestedSort === "rating" || requestedSort === "price-asc" || requestedSort === "price-desc" ? requestedSort : "newest";
   const page = Number(valueOf(query.page) ?? 1);
-  const minPrice = Number(valueOf(query.minPrice) ?? 0) * 1000 || undefined;
-  const maxPrice = Number(valueOf(query.maxPrice) ?? 0) * 1000 || undefined;
-  const [catalog, facets] = await Promise.all([
+  const minPrice = priceFilter(valueOf(query.minPrice));
+  const maxPrice = priceFilter(valueOf(query.maxPrice));
+  const data = await Promise.all([
     getCatalog({
       search,
       category,
@@ -58,7 +65,12 @@ export default async function CatalogPage({
       available: valueOf(query.available) === "true",
     }),
     getCatalogFacets(),
-  ]);
+  ]).catch(() => null);
+
+  if (!data) {
+    return <div className="container section min-h-[50vh]"><p className="eyebrow">Hora</p><h1 className="heading-lg mt-3">{locale === "fr" ? "Collection indisponible" : "Collection unavailable"}</h1><p role="status" className="mt-5 max-w-xl text-black/65">{locale === "fr" ? "Nous ne pouvons pas afficher les montres pour le moment. Réessayez bientôt." : "We cannot display watches right now. Please try again soon."}</p><Link href={`/${locale}`} className="mt-7 inline-block border-b border-ink font-semibold">{locale === "fr" ? "Retour à l’accueil" : "Back to home"}</Link></div>;
+  }
+  const [catalog, facets] = data;
 
   const pageHref = (target: number) => {
     const params = new URLSearchParams();
@@ -80,31 +92,31 @@ export default async function CatalogPage({
       <details className="mt-8 border-y border-black/10 py-4" open>
         <summary className="cursor-pointer text-sm font-bold">{locale === "fr" ? "Recherche et filtres" : "Search and filters"}</summary>
         <form className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
-          <input className="field" name="q" defaultValue={search} placeholder={locale === "fr" ? "Rechercher" : "Search"} />
-          <select className="field" name="category" defaultValue={category ?? ""}>
+          <input className="field" name="q" type="search" maxLength={100} defaultValue={search} aria-label={locale === "fr" ? "Rechercher une montre" : "Search watches"} placeholder={locale === "fr" ? "Rechercher" : "Search"} />
+          <select className="field" name="category" defaultValue={category ?? ""} aria-label={locale === "fr" ? "Catégorie" : "Category"}>
             <option value="">{locale === "fr" ? "Toutes catégories" : "All categories"}</option>
             {facets.categories.map((item) => <option key={item.id} value={locale === "fr" ? item.slugFr : item.slugEn}>{locale === "fr" ? item.nameFr : item.nameEn}</option>)}
           </select>
-          <select className="field" name="brand" defaultValue={brand ?? ""}>
+          <select className="field" name="brand" defaultValue={brand ?? ""} aria-label={locale === "fr" ? "Marque" : "Brand"}>
             <option value="">{locale === "fr" ? "Toutes marques" : "All brands"}</option>
             {facets.brands.map((item) => <option key={item}>{item}</option>)}
           </select>
-          <select className="field" name="gender" defaultValue={gender ?? ""}>
+          <select className="field" name="gender" defaultValue={gender ?? ""} aria-label={locale === "fr" ? "Genre" : "Gender"}>
             <option value="">{locale === "fr" ? "Tous genres" : "All genders"}</option>
             {facets.genders.map((item) => <option key={item}>{item}</option>)}
           </select>
-          <select className="field" name="movement" defaultValue={movement ?? ""}>
+          <select className="field" name="movement" defaultValue={movement ?? ""} aria-label={locale === "fr" ? "Mouvement" : "Movement"}>
             <option value="">{locale === "fr" ? "Tous mouvements" : "All movements"}</option>
             {facets.movements.map((item) => <option key={item}>{item}</option>)}
           </select>
-          <select className="field" name="sort" defaultValue={sort ?? "newest"}>
+          <select className="field" name="sort" defaultValue={sort} aria-label={locale === "fr" ? "Trier par" : "Sort by"}>
             <option value="newest">{locale === "fr" ? "Nouveautés" : "Newest"}</option>
             <option value="rating">{locale === "fr" ? "Mieux notées" : "Top rated"}</option>
             <option value="price-asc">{locale === "fr" ? "Prix croissant" : "Price low to high"}</option>
             <option value="price-desc">{locale === "fr" ? "Prix décroissant" : "Price high to low"}</option>
           </select>
-          <input className="field" type="number" min="0" name="minPrice" defaultValue={valueOf(query.minPrice)} placeholder={locale === "fr" ? "Prix min DT" : "Min price DT"} />
-          <input className="field" type="number" min="0" name="maxPrice" defaultValue={valueOf(query.maxPrice)} placeholder={locale === "fr" ? "Prix max DT" : "Max price DT"} />
+          <input className="field" type="number" min="0" step="0.001" name="minPrice" defaultValue={valueOf(query.minPrice)} aria-label={locale === "fr" ? "Prix minimum en dinars" : "Minimum price in dinars"} placeholder={locale === "fr" ? "Prix min DT" : "Min price DT"} />
+          <input className="field" type="number" min="0" step="0.001" name="maxPrice" defaultValue={valueOf(query.maxPrice)} aria-label={locale === "fr" ? "Prix maximum en dinars" : "Maximum price in dinars"} placeholder={locale === "fr" ? "Prix max DT" : "Max price DT"} />
           <label className="flex h-11 items-center gap-2 border border-black/15 bg-white px-3 text-sm">
             <input type="checkbox" name="available" value="true" defaultChecked={valueOf(query.available) === "true"} />
             {locale === "fr" ? "En stock" : "In stock"}
@@ -119,7 +131,7 @@ export default async function CatalogPage({
           {catalog.items.map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}
         </div>
       ) : (
-        <div className="my-20 text-center"><h2 className="font-display text-3xl">{locale === "fr" ? "Aucun résultat" : "No results"}</h2><p className="mt-3 text-black/60">{locale === "fr" ? "Essayez de modifier vos filtres." : "Try changing your filters."}</p></div>
+        <div className="my-20 text-center"><h2 className="font-display text-3xl">{locale === "fr" ? "Aucun résultat" : "No results"}</h2><p className="mt-3 text-black/60">{locale === "fr" ? "Essayez de modifier vos filtres." : "Try changing your filters."}</p><Link href={`/${locale}/montres`} className="mt-5 inline-block border-b border-ink font-semibold">{locale === "fr" ? "Voir toutes les montres" : "View all watches"}</Link></div>
       )}
 
       {catalog.pageCount > 1 && (

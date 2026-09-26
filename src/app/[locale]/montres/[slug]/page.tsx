@@ -6,7 +6,6 @@ import { ProductPurchase } from "@/components/site/ProductPurchase";
 import { ReviewForm } from "@/components/site/ReviewForm";
 import { TrackView } from "@/components/site/TrackView";
 import { getProductBySlug, getRelatedProducts } from "@/lib/products";
-import { formatTnd } from "@/lib/money";
 import { isLocale } from "@/lib/i18n";
 import { safeJson } from "@/lib/utils";
 import { publicEnv } from "@/lib/env";
@@ -18,7 +17,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, slug } = await params;
   if (!isLocale(locale)) return {};
-  const product = await getProductBySlug(slug);
+  const product = await getProductBySlug(slug).catch(() => null);
   if (!product) return {};
 
   const french = locale === "fr";
@@ -54,7 +53,9 @@ export default async function ProductPage({
 }) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
-  const product = await getProductBySlug(slug);
+  const result = await getProductBySlug(slug).then((product) => ({ product, failed: false })).catch(() => ({ product: null, failed: true }));
+  if (result.failed) return <div className="container section min-h-[50vh]"><p className="eyebrow">Hora</p><h1 className="heading-lg mt-3">{locale === "fr" ? "Montre momentanément indisponible" : "Watch temporarily unavailable"}</h1><p className="mt-5 text-black/65">{locale === "fr" ? "Veuillez réessayer bientôt." : "Please try again soon."}</p></div>;
+  const product = result.product;
   if (!product) notFound();
   const related = await getRelatedProducts(product.categoryId, product.id);
   const name = locale === "fr" ? product.nameFr : product.nameEn;
@@ -97,7 +98,6 @@ export default async function ProductPage({
         <aside className="lg:sticky lg:top-28 lg:self-start">
           <p className="eyebrow">{product.brand} · {locale === "fr" ? product.category.nameFr : product.category.nameEn}</p>
           <h1 className="mt-3 font-display text-4xl sm:text-5xl">{name}</h1>
-          {price && <p className="mt-5 text-xl font-bold">{formatTnd(price, locale)}</p>}
           <p className="mt-6 leading-7 text-black/65">{description}</p>
           <div className="my-7 border-y border-black/10 py-5">
             <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">

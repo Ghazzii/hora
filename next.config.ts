@@ -11,6 +11,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  outputFileTracingRoot: process.cwd(),
   experimental: {
     serverActions: {
       bodySizeLimit: "2mb",

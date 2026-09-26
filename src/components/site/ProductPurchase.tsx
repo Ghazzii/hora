@@ -5,6 +5,7 @@ import type { Locale } from "@/lib/i18n";
 import { formatTnd } from "@/lib/money";
 import { Button } from "@/components/ui/Button";
 import { useCart } from "@/providers/CartProvider";
+import Link from "next/link";
 
 type Variant = {
   id: string;
@@ -46,13 +47,17 @@ export function ProductPurchase({
   const available = selected.stock > 0;
   return (
     <div className="space-y-5">
+      <div aria-live="polite">
+        <p className="font-display text-2xl font-semibold">{formatTnd(selected.priceMillimes, locale)}{selected.compareAtPriceMillimes && selected.compareAtPriceMillimes > selected.priceMillimes && <span className="ml-3 font-sans text-sm font-normal text-black/45 line-through">{formatTnd(selected.compareAtPriceMillimes, locale)}</span>}</p>
+        <p className={available ? "mt-1 text-sm text-green-800" : "mt-1 text-sm text-red-700"}>{available ? (locale === "fr" ? "En stock" : "In stock") : (locale === "fr" ? "Rupture de stock" : "Out of stock")}</p>
+      </div>
       <fieldset>
         <legend className="label">{locale === "fr" ? "Bracelet" : "Strap"}</legend>
         <div className="mt-2 grid gap-2">
           {variants.map((variant) => (
             <label
               key={variant.id}
-              className="flex cursor-pointer items-center justify-between border border-black/15 p-3 has-[:checked]:border-gold has-[:checked]:bg-gold/5"
+              className="flex cursor-pointer items-center justify-between gap-3 border border-black/15 p-3 has-[:checked]:border-gold has-[:checked]:bg-gold/5"
             >
               <span>
                 <input
@@ -68,7 +73,7 @@ export function ProductPurchase({
                 />
                 {locale === "fr" ? variant.labelFr : variant.labelEn}
               </span>
-              <span className="font-semibold">{formatTnd(variant.priceMillimes, locale)}</span>
+              <span className="text-right"><span className="block font-semibold">{formatTnd(variant.priceMillimes, locale)}</span>{variant.stock <= 0 && <span className="block text-xs text-red-700">{locale === "fr" ? "Épuisé" : "Sold out"}</span>}</span>
             </label>
           ))}
         </div>
@@ -123,6 +128,7 @@ export function ProductPurchase({
           ? "Paiement uniquement à la livraison, après confirmation par téléphone."
           : "Payment only on delivery, after confirmation by phone."}
       </p>
+      <Link href={`/${locale}/livraison-retours`} className="block text-center text-sm font-semibold underline underline-offset-4">{locale === "fr" ? "Livraison & retours" : "Delivery & returns"}</Link>
     </div>
   );
 }

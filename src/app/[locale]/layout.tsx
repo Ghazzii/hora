@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { Footer } from "@/components/site/Footer";
 import { Header } from "@/components/site/Header";
+import { MetaPixel } from "@/components/MetaPixel";
 import { SiteProviders } from "@/providers/SiteProviders";
 import { isLocale } from "@/lib/i18n";
 import { publicEnv } from "@/lib/env";
@@ -47,6 +48,7 @@ export default async function StoreLayout({
       <Header locale={locale} />
       <main id="main-content">{children}</main>
       <Footer locale={locale} />
+      <MetaPixel />
     </SiteProviders>
   );
 }

@@ -28,6 +28,24 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
+function restoreCart(raw: string): CartItem[] {
+  const parsed: unknown = JSON.parse(raw);
+  if (!Array.isArray(parsed)) return [];
+  const seen = new Set<string>();
+  return parsed.slice(0, 30).filter((entry): entry is CartItem => {
+    if (!entry || typeof entry !== "object") return false;
+    const item = entry as Record<string, unknown>;
+    const textFields = ["productId", "variantId", "productSlugFr", "productSlugEn", "productNameFr", "productNameEn", "variantLabelFr", "variantLabelEn", "imageUrl"];
+    if (textFields.some((key) => typeof item[key] !== "string" || !(item[key] as string).length)) return false;
+    if (!Number.isSafeInteger(item.unitPriceMillimes) || (item.unitPriceMillimes as number) < 0) return false;
+    if (!Number.isSafeInteger(item.maxStock) || (item.maxStock as number) < 1) return false;
+    if (!Number.isSafeInteger(item.quantity) || (item.quantity as number) < 1 || (item.quantity as number) > Math.min(MAX_CART_QUANTITY, item.maxStock as number)) return false;
+    if (seen.has(item.variantId as string)) return false;
+    seen.add(item.variantId as string);
+    return true;
+  });
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
@@ -35,16 +53,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setItems(JSON.parse(stored) as CartItem[]);
+      if (stored) setItems(restoreCart(stored));
     } catch {
-      localStorage.removeItem(STORAGE_KEY);
+      try { localStorage.removeItem(STORAGE_KEY); } catch { /* Storage may be disabled. */ }
     } finally {
       setHydrated(true);
     }
   }, []);
 
   useEffect(() => {
-    if (hydrated) localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    if (hydrated) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); } catch { /* Keep the in-memory cart. */ }
+    }
   }, [items, hydrated]);
 
   const addItem = useCallback(

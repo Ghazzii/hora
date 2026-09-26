@@ -21,29 +21,34 @@ export function AuthForm({
     setError("");
     const form = new FormData(event.currentTarget);
     const body = Object.fromEntries(form.entries());
-    const response = await fetch(`/api/auth/${mode}`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const data = (await response.json()) as { error?: string };
-    if (!response.ok) {
-      setError(data.error ?? "Authentication failed");
+    try {
+      const response = await fetch(`/api/auth/${mode}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = (await response.json()) as { error?: string };
+      if (!response.ok) {
+        setError(data.error ?? (locale === "fr" ? "Connexion impossible." : "Could not sign in."));
+        return;
+      }
+      window.location.assign(redirectTo);
+    } catch {
+      setError(locale === "fr" ? "Connexion interrompue. Réessayez." : "Connection interrupted. Please try again.");
+    } finally {
       setPending(false);
-      return;
     }
-    window.location.assign(redirectTo);
   }
   return (
     <form onSubmit={submit} className="mx-auto mt-8 grid max-w-md gap-4 bg-white p-6 shadow-luxury">
       {mode === "register" && (
         <div className="grid gap-4 sm:grid-cols-2">
-          <label><span className="label">{locale === "fr" ? "Prénom" : "First name"}</span><input className="field mt-2" name="firstName" required /></label>
-          <label><span className="label">{locale === "fr" ? "Nom" : "Last name"}</span><input className="field mt-2" name="lastName" required /></label>
+          <label><span className="label">{locale === "fr" ? "Prénom" : "First name"}</span><input className="field mt-2" name="firstName" required autoComplete="given-name" minLength={2} maxLength={80} /></label>
+          <label><span className="label">{locale === "fr" ? "Nom" : "Last name"}</span><input className="field mt-2" name="lastName" required autoComplete="family-name" minLength={2} maxLength={80} /></label>
         </div>
       )}
       <label><span className="label">Email</span><input className="field mt-2" type="email" name="email" required autoComplete="email" /></label>
-      {mode === "register" && <label><span className="label">{locale === "fr" ? "Téléphone" : "Phone"}</span><input className="field mt-2" name="phone" required placeholder="+216 22 111 222" /></label>}
+      {mode === "register" && <label><span className="label">{locale === "fr" ? "Téléphone" : "Phone"}</span><input className="field mt-2" name="phone" type="tel" inputMode="tel" autoComplete="tel" required placeholder="+216 22 111 222" /></label>}
       <label><span className="label">{locale === "fr" ? "Mot de passe" : "Password"}</span><input className="field mt-2" type="password" name="password" required minLength={8} autoComplete={mode === "login" ? "current-password" : "new-password"} /></label>
       {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
       <Button type="submit" disabled={pending}>{pending ? "…" : mode === "login" ? locale === "fr" ? "Se connecter" : "Sign in" : locale === "fr" ? "Créer mon compte" : "Create account"}</Button>

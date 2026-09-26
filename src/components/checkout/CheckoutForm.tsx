@@ -29,35 +29,40 @@ export function CheckoutForm({ locale }: { locale: Locale }) {
     setSubmitting(true);
     setError("");
     const form = new FormData(event.currentTarget);
-    const response = await fetch("/api/orders", {
-      method: "POST",
-      headers: { "content-type": "application/json", "idempotency-key": idempotencyKey },
-      body: JSON.stringify({
-        idempotencyKey,
-        locale,
-        customerFirstName: form.get("customerFirstName"),
-        customerLastName: form.get("customerLastName"),
-        customerEmail: form.get("customerEmail"),
-        phone: form.get("phone"),
-        governorate: form.get("governorate"),
-        city: form.get("city"),
-        postalCode: form.get("postalCode"),
-        addressLine1: form.get("addressLine1"),
-        addressLine2: form.get("addressLine2"),
-        deliveryInstructions: form.get("deliveryInstructions"),
-        customerNotes: form.get("customerNotes") ?? "",
-        codAccepted: form.get("codAccepted") === "on",
-        items: cart.items.map((item) => ({ variantId: item.variantId, quantity: item.quantity })),
-      }),
-    });
-    const data = (await response.json()) as { error?: string; accessToken?: string };
-    if (!response.ok || !data.accessToken) {
-      setError(data.error ?? (locale === "fr" ? "La commande n'a pas pu être enregistrée." : "The order could not be placed."));
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "content-type": "application/json", "idempotency-key": idempotencyKey },
+        body: JSON.stringify({
+          idempotencyKey,
+          locale,
+          customerFirstName: form.get("customerFirstName"),
+          customerLastName: form.get("customerLastName"),
+          customerEmail: form.get("customerEmail"),
+          phone: form.get("phone"),
+          governorate: form.get("governorate"),
+          city: form.get("city"),
+          postalCode: form.get("postalCode"),
+          addressLine1: form.get("addressLine1"),
+          addressLine2: form.get("addressLine2"),
+          deliveryInstructions: form.get("deliveryInstructions"),
+          customerNotes: form.get("customerNotes") ?? "",
+          codAccepted: form.get("codAccepted") === "on",
+          items: cart.items.map((item) => ({ variantId: item.variantId, quantity: item.quantity })),
+        }),
+      });
+      const data = (await response.json()) as { error?: string; accessToken?: string };
+      if (!response.ok || !data.accessToken) {
+        setError(data.error ?? (locale === "fr" ? "La commande n'a pas pu être enregistrée." : "The order could not be placed."));
+        return;
+      }
+      cart.clear();
+      router.push(`/${locale}/commande/succes?token=${encodeURIComponent(data.accessToken)}`);
+    } catch {
+      setError(locale === "fr" ? "Connexion interrompue. Vérifiez votre réseau et réessayez." : "Connection interrupted. Check your network and try again.");
+    } finally {
       setSubmitting(false);
-      return;
     }
-    cart.clear();
-    router.push(`/${locale}/commande/succes?token=${encodeURIComponent(data.accessToken)}`);
   }
 
   if (!cart.hydrated) return <div>…</div>;
@@ -71,7 +76,7 @@ export function CheckoutForm({ locale }: { locale: Locale }) {
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <label><span className="label">{locale === "fr" ? "Prénom" : "First name"}</span><input className="field mt-2" name="customerFirstName" required minLength={2} maxLength={80} autoComplete="given-name" /></label>
             <label><span className="label">{locale === "fr" ? "Nom" : "Last name"}</span><input className="field mt-2" name="customerLastName" required minLength={2} maxLength={80} autoComplete="family-name" /></label>
-            <label><span className="label">{locale === "fr" ? "Téléphone tunisien" : "Tunisian phone"}</span><input className="field mt-2" name="phone" required placeholder="+216 22 111 222" autoComplete="tel" /></label>
+            <label><span className="label">{locale === "fr" ? "Téléphone tunisien" : "Tunisian phone"}</span><input className="field mt-2" name="phone" type="tel" required placeholder="+216 22 111 222" autoComplete="tel" inputMode="tel" /></label>
             <label><span className="label">Email ({locale === "fr" ? "optionnel" : "optional"})</span><input className="field mt-2" name="customerEmail" type="email" autoComplete="email" /></label>
           </div>
         </section>

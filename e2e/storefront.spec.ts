@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("French storefront and catalog render", async ({ page }) => {
   await page.goto("/fr");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Tunisie");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Le temps vous appartient");
   await page.getByRole("link", { name: /Découvrir la collection/i }).click();
   await expect(page).toHaveURL(/\/fr\/montres/);
   await expect(page.locator("article").first()).toBeVisible();

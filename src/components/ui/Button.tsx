@@ -32,7 +32,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         variant === "danger" && "bg-red-700 text-white hover:bg-red-800",
         size === "sm" && "h-9 px-3 text-sm",
         size === "md" && "h-11 px-5 text-sm",
-        size === "lg" && "h-13 px-7 text-base",
+        size === "lg" && "h-12 px-7 text-base",
         className,
       )}
       {...props}

@@ -6,6 +6,7 @@ import type {
 declare global {
   interface Window {
     fbq?: (...args: unknown[]) => void;
+    horaMetaConsent?: boolean;
   }
 }
 
@@ -31,7 +32,7 @@ export function track(
     });
   }
 
-  if (window.fbq && process.env.NEXT_PUBLIC_META_PIXEL_ID) {
+  if (window.fbq && process.env.NEXT_PUBLIC_META_PIXEL_ID && window.horaMetaConsent) {
     window.fbq("track", name, {
       ...payload,
       currency: "TND",

@@ -12,7 +12,7 @@ The typed abstraction supports:
 - InitiateCheckout
 - OrderPlaced
 
-Set `NEXT_PUBLIC_META_PIXEL_ID` only after implementing the consent behavior appropriate to the business. Without it, the provider is a no-op while first-party events continue.
+When `NEXT_PUBLIC_META_PIXEL_ID` is set, the browser asks visitors before loading Meta Pixel. A visitor can reopen the marketing preference control to change their choice. Without a Pixel ID, the provider is a no-op while first-party events continue. Review the consent wording and local requirements before enabling it in production.
 
 ## Attribution
 

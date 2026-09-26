@@ -106,6 +106,8 @@ Copy `.env.example`. Required:
 
 Optional Meta variables are empty by default. Their absence never breaks the application. See [docs/META_INTEGRATION.md](docs/META_INTEGRATION.md).
 
+Set `NEXT_PUBLIC_CONTACT_EMAIL` and/or `NEXT_PUBLIC_CONTACT_PHONE` to publish real business contact details on the contact page. Without them, the page clearly says direct contact details are pending. Do not open the store for real orders until the seller identity, return terms, privacy details, and contact channel have been completed.
+
 ## Supabase setup
 
 1. Create a free Supabase project.
@@ -143,6 +145,7 @@ The application uses httpOnly same-site session cookies, bcrypt password hashes,
 - configure backups, TLS and monitoring;
 - review Tunisian privacy, consumer, returns and invoicing obligations;
 - complete legal/contact starter copy;
+- set a valid database URL and check `/api/health` before accepting orders;
 - restrict approved image hosts if remote images are enabled.
 
 ## Deploying later

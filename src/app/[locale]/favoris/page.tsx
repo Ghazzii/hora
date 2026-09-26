@@ -23,15 +23,23 @@ export default function WishlistPage() {
   const locale = isLocale(route.locale) ? route.locale : "fr";
   const wishlist = useWishlist();
   const [products, setProducts] = useState<WishlistProduct[]>([]);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     if (!wishlist.hydrated || wishlist.productIds.length === 0) {
       setProducts([]);
       return;
     }
-    void fetch(`/api/products?ids=${wishlist.productIds.join(",")}`)
-      .then((response) => response.json())
-      .then((data: { products: WishlistProduct[] }) => setProducts(data.products));
+    const controller = new AbortController();
+    setLoadError(false);
+    void fetch(`/api/products?ids=${wishlist.productIds.join(",")}`, { signal: controller.signal })
+      .then((response) => {
+        if (!response.ok) throw new Error("Wishlist unavailable");
+        return response.json() as Promise<{ products: WishlistProduct[] }>;
+      })
+      .then((data) => setProducts(data.products))
+      .catch(() => { if (!controller.signal.aborted) setLoadError(true); });
+    return () => controller.abort();
   }, [wishlist.hydrated, wishlist.productIds]);
 
   return (
@@ -39,6 +47,8 @@ export default function WishlistPage() {
       <h1 className="heading-lg">{locale === "fr" ? "Vos favoris" : "Your wishlist"}</h1>
       {!wishlist.productIds.length ? (
         <p className="mt-6 text-black/60">{locale === "fr" ? "Vous n'avez encore ajouté aucune montre." : "You have not added any watches yet."}</p>
+      ) : loadError ? (
+        <p role="status" className="mt-6 text-black/60">{locale === "fr" ? "Vos favoris ne peuvent pas être chargés pour le moment. Réessayez bientôt." : "Your wishlist cannot be loaded right now. Please try again soon."}</p>
       ) : (
         <div className="mt-10 grid grid-cols-2 gap-5 lg:grid-cols-4">
           {products.map((product) => (

@@ -35,7 +35,8 @@ export function ProductCard({
     variant?.compareAtPriceMillimes &&
       variant.compareAtPriceMillimes > (variant?.priceMillimes ?? 0),
   );
-  const lowStock = Boolean(variant && variant.stock > 0 && variant.stock <= 3);
+  const totalStock = product.variants.reduce((sum, item) => sum + item.stock, 0);
+  const lowStock = totalStock > 0 && totalStock <= 3;
   return (
     <article className="group relative rounded-[1.25rem] bg-white p-2 shadow-[0_1px_0_rgba(10,10,10,.08)] transition duration-300 hover:-translate-y-1 hover:shadow-luxury">
       <div className="relative aspect-[4/5] overflow-hidden rounded-[.85rem] bg-[#ECE7DD]">
@@ -44,7 +45,7 @@ export function ProductCard({
             src={image?.url ?? "/images/watch-1.svg"}
             alt={locale === "fr" ? image?.altFr ?? name : image?.altEn ?? name}
             fill
-            sizes="(max-width: 768px) 50vw, 25vw"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-cover transition duration-700 group-hover:scale-[1.04]"
           />
         </Link>
@@ -53,7 +54,7 @@ export function ProductCard({
           label={locale === "fr" ? "Ajouter aux favoris" : "Add to wishlist"}
           className="absolute right-3 top-3"
         />
-        {variant && variant.stock <= 0 && (
+        {totalStock <= 0 && (
           <span className="absolute bottom-3 left-3 bg-ink px-3 py-1 text-xs text-white">
             {locale === "fr" ? "Épuisée" : "Sold out"}
           </span>
@@ -78,7 +79,7 @@ export function ProductCard({
               </span>
             )}
           </span>
-          <span className="text-black/55">★ {product.averageRating.toFixed(1)}</span>
+          {product.averageRating > 0 && <span className="text-black/55" aria-label={locale === "fr" ? `Note ${product.averageRating.toFixed(1)} sur 5` : `Rated ${product.averageRating.toFixed(1)} out of 5`}>★ {product.averageRating.toFixed(1)}</span>}
         </div>
       </div>
     </article>

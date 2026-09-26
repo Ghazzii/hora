@@ -1,4 +1,7 @@
 import { AuthForm } from "@/components/auth/AuthForm";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default function AdminLoginPage() {
   return (
@@ -8,7 +11,6 @@ export default function AdminLoginPage() {
         <h1 className="mt-5 font-display text-4xl">Hora Admin</h1>
         <p className="mt-3 text-sm text-white/60">Authorized team members only</p>
         <div className="text-left text-ink"><AuthForm locale="fr" mode="login" redirectTo="/admin" /></div>
-        <p className="mt-5 text-xs text-white/45">Development seed: admin@hora.tn · password documented in README. Change it before any real use.</p>
       </div>
     </main>
   );
