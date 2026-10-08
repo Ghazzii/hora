@@ -9,7 +9,9 @@
 - The existing Supabase project was resumed. Its historical migration checksum matches the recovered SQL with Windows line endings. RLS was enabled on the existing application tables; the Vercel project was created and set to Node.js 22 with its production origin configured.
 - Live Supabase migrations were applied after a private backup. Both pooled connections and the production health endpoint passed. A production administrator was created; sign-in and protected administration passed, and known demo accounts were disabled.
 - The private Hora Orders spreadsheet and Google service account were created. Google authentication and the 20-column header passed verification. A controlled HTTP checkout and retry produced one order, one stock decrement and one verified Google Sheet row; the test order was cancelled and its stock restored. Authenticated cron execution and unauthorized-request rejection also passed.
-- The production build with real service configuration passed. Vercel deployment and deployed checkout checks remain pending Vercel production environment configuration and plan setup. Local results do not establish that the store is live.
+- The production build with real service configuration passed. Production environment variables were imported into Vercel; database URLs, session/cron secrets and the Google private key use Secret storage. The project remains unpublished on Hobby by the owner's request; no paid upgrade or deployment was started, and prepared commits remain local. Plan setup, pushing the prepared changes and deployed checkout checks remain pending. Local results do not establish that the store is live.
+
+Before launch, rotate the database password disclosed in chat, update the local and Vercel connection strings, and replace demo catalog content and starter business/legal notices. The generated administrator password stays in the private local `.env` as `ADMIN_PASSWORD` and is excluded from Vercel configuration and Git.
 
 The older verification below describes its historical commit and environment.
 
