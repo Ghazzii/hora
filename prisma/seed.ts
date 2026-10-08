@@ -195,6 +195,9 @@ const catalog = [
 ] as const;
 
 async function main() {
+  if (process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production") {
+    throw new Error("Demo seeding is disabled in production. Use db:admin and add real products in /admin.");
+  }
   const adminEmail = process.env.SEED_ADMIN_EMAIL ?? "admin@hora.tn";
   const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? "HoraAdmin123!";
   const customerEmail = process.env.SEED_CUSTOMER_EMAIL ?? "client@hora.tn";

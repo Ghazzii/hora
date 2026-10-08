@@ -350,3 +350,25 @@ model AnalyticsEvent {
   @@index([userId])
   @@index([orderId])
 }
+
+// Stable export rows make spreadsheet retries idempotent.
+model OrderSheetExport {
+  id            Int       @id @default(autoincrement())
+  orderId       String    @unique
+  values        Json
+  attempts      Int       @default(0)
+  nextAttemptAt DateTime  @default(now())
+  syncedAt      DateTime?
+  lastError     String?
+  createdAt     DateTime  @default(now())
+
+  @@index([syncedAt, nextAttemptAt])
+}
+
+model RateLimitBucket {
+  key     String   @id
+  count   Int
+  resetAt DateTime
+
+  @@index([resetAt])
+}

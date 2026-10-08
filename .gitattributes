@@ -1,0 +1,3 @@
+prisma/migrations/**/migration.sql text eol=lf
+# Preserve the checksum of the historical migration applied from Windows.
+prisma/migrations/20260807000000_init/migration.sql text eol=crlf

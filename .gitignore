@@ -8,9 +8,14 @@ test-results
 .env
 .env.local
 .env.*.local
+.env.production
+.vercel
+*service-account*.json
 !.env.example
 *.log
 .DS_Store
 .prisma
 *.db
 *.db-journal
+
+tsconfig.tsbuildinfo

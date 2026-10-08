@@ -6,7 +6,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
   const key = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
-  if (!checkRateLimit(`register:${key}`, 5, 60_000).allowed) return NextResponse.json({ error: "Too many attempts" }, { status: 429 });
+  if (!(await checkRateLimit(`register:${key}`, 5, 60_000)).allowed) return NextResponse.json({ error: "Too many attempts" }, { status: 429 });
   const parsed = registerSchema.safeParse(await request.json());
   if (!parsed.success) return NextResponse.json({ error: "Invalid account details", issues: parsed.error.flatten().fieldErrors }, { status: 422 });
   try {

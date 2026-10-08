@@ -9,6 +9,11 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: (process.env.PRODUCT_IMAGE_HOST ?? "").split(",").map((host) => host.trim()).filter(Boolean).map((hostname) => ({
+      protocol: "https" as const, hostname, pathname: "/**",
+    })),
+  },
   poweredByHeader: false,
   reactStrictMode: true,
   outputFileTracingRoot: process.cwd(),

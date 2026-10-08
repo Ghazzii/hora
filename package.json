@@ -4,7 +4,7 @@
   "private": true,
   "description": "Independent bilingual watch ecommerce for Tunisia",
   "engines": {
-    "node": ">=20.9.0",
+    "node": "22.x",
     "npm": ">=10.0.0"
   },
   "scripts": {
@@ -17,14 +17,18 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "db:generate": "node scripts/prisma.mjs generate",
-    "db:migrate": "node scripts/prisma.mjs db push --skip-generate",
-    "db:migrate:dev": "node scripts/prisma.mjs db push --skip-generate",
-    "db:setup": "node scripts/prisma.mjs db push --skip-generate && npm run db:generate && node scripts/prisma.mjs db seed",
+    "db:migrate": "node scripts/prisma.mjs migrate deploy",
+    "db:migrate:dev": "node scripts/prisma.mjs migrate dev",
+    "db:setup": "npm run db:migrate && npm run db:generate && node scripts/prisma.mjs db seed",
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "node scripts/prisma.mjs db push --force-reset --skip-generate && npm run db:generate && node scripts/prisma.mjs db seed",
     "db:studio": "prisma studio",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "build:vercel": "npm run production:check && prisma generate && next build",
+    "db:admin": "tsx scripts/create-admin.ts",
+    "production:check": "node scripts/check-production-env.mjs",
+    "db:sheets:backfill": "tsx scripts/backfill-order-sheets.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -35,28 +39,38 @@
     "@supabase/supabase-js": "^2.112.2",
     "bcryptjs": "3.0.2",
     "clsx": "2.1.1",
+    "dotenv": "16.6.1",
     "jose": "6.1.0",
     "lucide-react": "0.468.0",
-    "next": "15.5.7",
-    "react": "19.1.1",
-    "react-dom": "19.1.1",
+    "next": "15.5.27",
+    "react": "19.1.9",
+    "react-dom": "19.1.9",
+    "sharp": "0.35.5",
     "tailwind-merge": "2.6.0",
     "zod": "3.25.76"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
     "@playwright/test": "1.62.1",
-    "@types/node": "22.10.2",
+    "@types/node": "22.20.5",
     "@types/react": "19.0.3",
     "@types/react-dom": "19.0.2",
     "autoprefixer": "10.4.20",
     "eslint": "8.57.1",
-    "eslint-config-next": "15.5.7",
-    "postcss": "8.4.49",
+    "eslint-config-next": "15.5.27",
+    "postcss": "8.5.29",
     "prettier": "3.4.2",
     "prisma": "6.19.0",
     "tailwindcss": "3.4.17",
-    "tsx": "4.19.2",
+    "tsx": "4.23.15",
     "typescript": "5.7.2",
-    "vitest": "2.1.8"
+    "vitest": "5.0.3"
+  },
+  "overrides": {
+    "postcss": "8.5.29",
+    "@prisma/config": {
+      "deepmerge-ts": "8.0.2",
+      "effect": "3.21.0"
+    }
   }
 }

@@ -2,7 +2,7 @@
 
 Hora is an independent, bilingual (French/English) watch ecommerce application for Tunisia. It owns its catalog, inventory, customers, reviews, attribution and cash-on-delivery orders in Supabase PostgreSQL.
 
-This repository contains the complete source code. It does **not** use Shopify or a payment gateway, and it contains no deployment or domain configuration.
+This repository contains the complete source code. It does **not** use Shopify or a payment gateway, and it includes Vercel deployment configuration and reliable Google Sheets order exports.
 
 ## Stack
 
@@ -91,7 +91,7 @@ Delivery is fixed at **8 DT (8,000 millimes)**. Money is stored as integer milli
 | `npm test` | Unit tests |
 | `npm run test:e2e` | Playwright smoke tests |
 | `npm run db:setup` | Apply the Supabase schema and add demo data |
-| `npm run db:migrate` | Apply the current database schema |
+| `npm run db:migrate` | Apply versioned database migrations |
 | `npm run db:seed` | Idempotent demo seed |
 | `npm run db:reset` | Reset local DB (destructive) |
 | `npm run db:studio` | Prisma data browser |
@@ -138,9 +138,9 @@ e2e/                 Route smoke tests
 
 ## Security and production readiness
 
-The application uses httpOnly same-site session cookies, bcrypt password hashes, server-side authorization, Zod validation, safe order lookup tokens, security headers and an in-memory development rate limiter. Before production:
+The application uses httpOnly same-site session cookies, bcrypt password hashes, server-side authorization, Zod validation, safe order lookup tokens, security headers and a PostgreSQL-backed production rate limiter (in-memory locally). Before production:
 
-- use a managed/shared rate limiter;
+- verify the database-backed shared production rate limiter;
 - rotate seed credentials and `SESSION_SECRET`;
 - configure backups, TLS and monitoring;
 - review Tunisian privacy, consumer, returns and invoicing obligations;
@@ -148,6 +148,6 @@ The application uses httpOnly same-site session cookies, bcrypt password hashes,
 - set a valid database URL and check `/api/health` before accepting orders;
 - restrict approved image hosts if remote images are enabled.
 
-## Deploying later
+## Production deployment
 
-Production deployment is intentionally out of scope. When ready, choose a Node.js-compatible host, configure the documented Supabase and app environment variables, run `npm run db:migrate`, then `npm run build && npm start`. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). No deployment has been performed by this project.
+Deploy on Vercel with Supabase PostgreSQL and one private Google Sheets row per order. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for account creation, migrations, safe admin setup, Google service-account configuration, Vercel environment variables, and launch checks. Checkout queues exports atomically; background delivery and authenticated cron retries write the same stable row. The live services must be configured and verified before accepting orders.

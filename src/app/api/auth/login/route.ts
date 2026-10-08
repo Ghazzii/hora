@@ -5,7 +5,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
   const key = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
-  if (!checkRateLimit(`login:${key}`, 8, 60_000).allowed) return NextResponse.json({ error: "Too many attempts" }, { status: 429 });
+  if (!(await checkRateLimit(`login:${key}`, 8, 60_000)).allowed) return NextResponse.json({ error: "Too many attempts" }, { status: 429 });
   const parsed = loginSchema.safeParse(await request.json());
   if (!parsed.success) return NextResponse.json({ error: "Invalid credentials" }, { status: 400 });
   const user = await authenticate(parsed.data.email, parsed.data.password);

@@ -11,6 +11,7 @@ import { serverEnv } from "@/lib/env";
 import { normalizeTunisianPhone } from "@/lib/phone";
 import { checkoutSchema, type CheckoutInput } from "@/lib/validation";
 import { calculateOrderPricing } from "@/lib/order-pricing";
+import { orderSheetRow } from "@/lib/order-sheet-row";
 import {
   canTransitionOrder,
   transitionRestocks,
@@ -50,6 +51,22 @@ function orderNumber() {
 }
 
 export async function createOrder(
+  rawInput: CheckoutInput,
+  rawAttribution: Attribution,
+  userId?: string,
+) {
+  // Serializable transactions can conflict under concurrent checkout. Retry
+  // the entire operation, including the idempotency lookup, after rollback.
+  for (let attempt = 0; ; attempt += 1) {
+    try { return await createOrderAttempt(rawInput, rawAttribution, userId); }
+    catch (error) {
+      if (attempt >= 2 || !(error instanceof Prisma.PrismaClientKnownRequestError) ||
+        !["P2034", "P2002"].includes(error.code)) throw error;
+    }
+  }
+}
+
+async function createOrderAttempt(
   rawInput: CheckoutInput,
   rawAttribution: Attribution,
   userId?: string,
@@ -185,6 +202,11 @@ export async function createOrder(
             },
           },
         },
+        include: { items: true },
+      });
+
+      await tx.orderSheetExport.create({
+        data: { orderId: order.id, values: orderSheetRow(order) },
       });
 
       await tx.inventoryMovement.createMany({
@@ -295,5 +317,5 @@ export async function transitionOrder(
       },
     });
     return updated;
-  });
+  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
 }

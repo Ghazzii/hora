@@ -67,7 +67,7 @@ export default async function ProductPage({
     "@context": "https://schema.org",
     "@type": "Product",
     name,
-    image: product.images.map((item) => `${publicEnv.baseUrl}${item.url}`),
+    image: product.images.map((item) => new URL(item.url, publicEnv.baseUrl).href),
     description,
     sku: product.sku,
     brand: { "@type": "Brand", name: product.brand },
