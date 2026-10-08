@@ -7,7 +7,9 @@
 - The Next.js 15.5.27 production build passed locally. React was updated to 19.1.9; patched PostCSS and Prisma configuration dependencies are pinned through npm overrides.
 - `npm audit --omit=dev` reports zero vulnerabilities. The full audit still reports development-tool findings in the Tailwind/ESLint dependency tree; no forced major Tailwind migration was performed.
 - The existing Supabase project was resumed. Its historical migration checksum matches the recovered SQL with Windows line endings. RLS was enabled on the existing application tables; the Vercel project was created and set to Node.js 22 with its production origin configured.
-- New live Supabase migrations, Google Sheets delivery and deployed checkout checks remain pending service credentials and configuration. Local build/test results do not establish that the store is live.
+- Live Supabase migrations were applied after a private backup. Both pooled connections and the production health endpoint passed. A production administrator was created; sign-in and protected administration passed, and known demo accounts were disabled.
+- The private Hora Orders spreadsheet and Google service account were created. Google authentication and the 20-column header passed verification. A controlled HTTP checkout and retry produced one order, one stock decrement and one verified Google Sheet row; the test order was cancelled and its stock restored. Authenticated cron execution and unauthorized-request rejection also passed.
+- The production build with real service configuration passed. Vercel deployment and deployed checkout checks remain pending Vercel production environment configuration and plan setup. Local results do not establish that the store is live.
 
 The older verification below describes its historical commit and environment.
 
