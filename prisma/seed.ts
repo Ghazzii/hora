@@ -8,6 +8,7 @@ import {
 } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { createHash } from "node:crypto";
+import { addDeliveryFee, deliveryFeeFor } from "../src/lib/money";
 
 const prisma = new PrismaClient();
 
@@ -352,10 +353,13 @@ async function main() {
       ],
     });
 
+    // Each watch is sold as a single option; the old premium-strap option stays hidden for past orders.
     await Promise.all([
       prisma.productVariant.upsert({
         where: { sku: `${item.sku}-STD` },
         update: {
+          labelFr: "Standard",
+          labelEn: "Standard",
           priceMillimes: item.price,
           compareAtPriceMillimes: item.compareAt,
           stock: item.stock,
@@ -364,8 +368,8 @@ async function main() {
         create: {
           productId: product.id,
           sku: `${item.sku}-STD`,
-          labelFr: "Bracelet standard",
-          labelEn: "Standard strap",
+          labelFr: "Standard",
+          labelEn: "Standard",
           attributes: { size: "40 mm", finish: item.color },
           priceMillimes: item.price,
           compareAtPriceMillimes: item.compareAt,
@@ -373,23 +377,9 @@ async function main() {
           lowStockThreshold: 4,
         },
       }),
-      prisma.productVariant.upsert({
+      prisma.productVariant.updateMany({
         where: { sku: `${item.sku}-ALT` },
-        update: {
-          priceMillimes: item.price + 20000,
-          stock: Math.max(2, item.stock - 2),
-          active: true,
-        },
-        create: {
-          productId: product.id,
-          sku: `${item.sku}-ALT`,
-          labelFr: "Bracelet premium",
-          labelEn: "Premium strap",
-          attributes: { size: "40 mm", finish: "Premium" },
-          priceMillimes: item.price + 20000,
-          stock: Math.max(2, item.stock - 2),
-          lowStockThreshold: 3,
-        },
+        data: { active: false },
       }),
     ]);
     products.push(product);
@@ -495,8 +485,8 @@ async function main() {
         postalCode: "2070",
         addressLine1: "12 avenue Habib Bourguiba",
         subtotalMillimes: variant.priceMillimes,
-        deliveryFeeMillimes: 8000,
-        totalMillimes: variant.priceMillimes + 8000,
+        deliveryFeeMillimes: deliveryFeeFor(variant.priceMillimes),
+        totalMillimes: addDeliveryFee(variant.priceMillimes),
         status: seeded.status,
         paymentStatus: seeded.paymentStatus,
         source: seeded.source,

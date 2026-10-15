@@ -1,6 +1,7 @@
+import type { Prisma } from "@prisma/client";
 import { importPKCS8, SignJWT } from "jose";
 import { db } from "@/lib/db";
-import { orderSheetRange } from "@/lib/order-sheet-row";
+import { ORDER_SHEET_HEADERS, orderSheetHeaderRange, orderSheetRange, orderSheetRow } from "@/lib/order-sheet-row";
 
 let cachedToken: { value: string; expiresAt: number } | undefined;
 
@@ -9,7 +10,12 @@ export function sheetsConfigured() {
     process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY);
 }
 
-async function accessToken() {
+function tabName() {
+  return process.env.GOOGLE_SHEETS_TAB_NAME ?? "Orders";
+}
+
+/** OAuth token for the service account, shared by the order export and the product import. */
+export async function accessToken() {
   if (cachedToken && cachedToken.expiresAt > Date.now()) return cachedToken.value;
   const key = await importPKCS8(process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY!.replaceAll("\\n", "\n"), "RS256");
   const assertion = await new SignJWT({ scope: "https://www.googleapis.com/auth/spreadsheets" })
@@ -42,7 +48,8 @@ export async function syncOrderSheets(orderId?: string) {
   for (const job of exports) {
     if (Date.now() > deadline) break;
     try {
-      const range = orderSheetRange(process.env.GOOGLE_SHEETS_TAB_NAME ?? "Orders", job.id);
+      const tab = tabName();
+      const range = orderSheetRange(tab, job.id);
       const spreadsheet = encodeURIComponent(process.env.GOOGLE_SHEETS_SPREADSHEET_ID!);
       const token = await accessToken();
       // Grow only by appending rows; concurrent workers cannot shrink the grid.
@@ -51,29 +58,40 @@ export async function syncOrderSheets(orderId?: string) {
       });
       if (!metadata.ok) throw new Error(`Google Sheets HTTP ${metadata.status}`);
       const info = await metadata.json() as { sheets?: { properties: { sheetId: number; title: string; gridProperties: { rowCount: number } } }[] };
-      const tab = info.sheets?.find((sheet) => sheet.properties.title === (process.env.GOOGLE_SHEETS_TAB_NAME ?? "Orders"));
-      if (!tab) throw new Error("Orders tab missing");
-      if (tab.properties.gridProperties.rowCount < job.id + 1) {
+      const sheet = info.sheets?.find((item) => item.properties.title === tab);
+      if (!sheet) throw new Error("Orders tab missing");
+      if (sheet.properties.gridProperties.rowCount < job.id + 1) {
         const grow = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheet}:batchUpdate`, {
           method: "POST", headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
-          body: JSON.stringify({ requests: [{ appendDimension: { sheetId: tab.properties.sheetId, dimension: "ROWS", length: Math.max(1000, job.id + 1 - tab.properties.gridProperties.rowCount) } }] }),
+          body: JSON.stringify({ requests: [{ appendDimension: { sheetId: sheet.properties.sheetId, dimension: "ROWS", length: Math.max(1000, job.id + 1 - sheet.properties.gridProperties.rowCount) } }] }),
           signal: AbortSignal.timeout(8_000), cache: "no-store",
         });
         if (!grow.ok) throw new Error(`Google Sheets HTTP ${grow.status}`);
       }
-      const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheet}/values/${encodeURIComponent(range)}?valueInputOption=RAW`, {
-        method: "PUT",
+      // One RAW write keeps the header row current alongside the order's stable row.
+      const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheet}/values:batchUpdate`, {
+        method: "POST",
         headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
-        body: JSON.stringify({ range, majorDimension: "ROWS", values: [job.values] }),
+        body: JSON.stringify({
+          valueInputOption: "RAW",
+          data: [
+            { range: orderSheetHeaderRange(tab), majorDimension: "ROWS", values: [ORDER_SHEET_HEADERS] },
+            { range, majorDimension: "ROWS", values: [job.values] },
+          ],
+        }),
         signal: AbortSignal.timeout(8_000), cache: "no-store",
       });
       if (!response.ok) throw new Error(`Google Sheets HTTP ${response.status}`);
-      await db.orderSheetExport.update({ where: { id: job.id }, data: { syncedAt: new Date(), lastError: null, attempts: { increment: 1 } } });
+      // Only mark synced if the row was not refreshed (e.g. a status change) while we were writing.
+      await db.orderSheetExport.updateMany({
+        where: { id: job.id, nextAttemptAt: job.nextAttemptAt },
+        data: { syncedAt: new Date(), lastError: null, attempts: { increment: 1 } },
+      });
       synced += 1;
     } catch (error) {
       // Store only a safe error category, never credentials or customer data.
       const message = error instanceof Error && /^Google (authentication|Sheets) HTTP \d+$/.test(error.message)
-        ? error.message : "Google Sheets export failed";
+        ? error.message : error instanceof Error && error.message === "Orders tab missing" ? "Orders tab missing" : "Google Sheets export failed";
       await db.orderSheetExport.updateMany({ where: { id: job.id, syncedAt: null }, data: {
         attempts: { increment: 1 }, lastError: message,
         nextAttemptAt: new Date(Date.now() + Math.min(3_600_000, 60_000 * 2 ** Math.min(job.attempts, 6))),
@@ -83,4 +101,37 @@ export async function syncOrderSheets(orderId?: string) {
     }
   }
   return { configured: true, synced, failed };
+}
+
+type SheetClient = Pick<Prisma.TransactionClient, "order" | "orderSheetExport">;
+
+/**
+ * Rewrites an order's spreadsheet row with its current status and payment.
+ * The row keeps its position; orders placed before the integration get a new row.
+ */
+export async function queueOrderSheetRefresh(orderId: string, client: SheetClient = db) {
+  const order = await client.order.findUnique({ where: { id: orderId }, include: { items: true } });
+  if (!order) return;
+  const values = orderSheetRow(order);
+  await client.orderSheetExport.upsert({
+    where: { orderId },
+    update: { values, syncedAt: null, nextAttemptAt: new Date(), lastError: null },
+    create: { orderId, values },
+  });
+}
+
+export async function orderSheetHealth() {
+  const [pending, failing, lastSynced] = await Promise.all([
+    db.orderSheetExport.count({ where: { syncedAt: null } }),
+    db.orderSheetExport.count({ where: { syncedAt: null, lastError: { not: null } } }),
+    db.orderSheetExport.findFirst({ where: { syncedAt: { not: null } }, orderBy: { syncedAt: "desc" }, select: { syncedAt: true } }),
+  ]);
+  const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
+  return {
+    configured: sheetsConfigured(),
+    pending,
+    failing,
+    lastSyncedAt: lastSynced?.syncedAt ?? null,
+    spreadsheetUrl: spreadsheetId ? `https://docs.google.com/spreadsheets/d/${encodeURIComponent(spreadsheetId)}/edit` : null,
+  };
 }

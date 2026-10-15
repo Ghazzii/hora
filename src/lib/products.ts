@@ -1,6 +1,15 @@
 import { Prisma } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 import { db } from "@/lib/db";
 import { catalogVariantWhere } from "@/lib/catalog-filters";
+import { CATALOG_TAG } from "@/lib/cache";
+
+// Catalog reads are shared across visitors for a few minutes and cleared on every
+// stock, product or review change. Checkout always re-reads stock and prices itself.
+// Cached values are JSON-serialized, so Date fields arrive as ISO strings.
+function cached<Args extends unknown[], Result>(name: string, fn: (...args: Args) => Promise<Result>) {
+  return unstable_cache(fn, [name], { tags: [CATALOG_TAG], revalidate: 300 });
+}
 
 export type CatalogQuery = {
   search?: string;
@@ -34,7 +43,7 @@ const productInclude = {
   },
 } satisfies Prisma.ProductInclude;
 
-export async function getCatalog(query: CatalogQuery = {}) {
+async function loadCatalog(query: CatalogQuery = {}) {
   const pageSize = Math.min(24, Math.max(1, query.pageSize ?? 12));
   const requestedPage = Number.isFinite(query.page) ? Math.max(1, Math.floor(query.page ?? 1)) : 1;
   const where: Prisma.ProductWhereInput = {
@@ -119,44 +128,53 @@ export async function getCatalog(query: CatalogQuery = {}) {
   };
 }
 
-export function getFeaturedProducts(limit = 6) {
-  return db.product.findMany({
+export const getCatalog = cached("catalog", loadCatalog);
+
+export const getFeaturedProducts = cached("featured", async (limit: number = 6) => {
+  const featured = await db.product.findMany({
     where: { active: true, featured: true },
     include: cardInclude,
     orderBy: [{ averageRating: "desc" }, { createdAt: "desc" }],
     take: limit,
   });
-}
+  if (featured.length >= Math.min(limit, 3)) return featured;
+  // A new store may not have marked anything as featured yet: fall back to the newest watches.
+  return db.product.findMany({
+    where: { active: true },
+    include: cardInclude,
+    orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
+    take: limit,
+  });
+});
 
-export function getProductBySlug(slug: string) {
-  return db.product.findFirst({
+export const getProductBySlug = cached("product", (slug: string) =>
+  db.product.findFirst({
     where: {
       active: true,
       OR: [{ slugFr: slug }, { slugEn: slug }],
     },
     include: productInclude,
-  });
-}
+  }),
+);
 
-export function getRelatedProducts(categoryId: string, productId: string) {
-  return db.product.findMany({
+export const getRelatedProducts = cached("related", (categoryId: string, productId: string) =>
+  db.product.findMany({
     where: { active: true, categoryId, id: { not: productId } },
     include: cardInclude,
+    orderBy: [{ featured: "desc" }, { averageRating: "desc" }],
     take: 4,
-  });
-}
+  }),
+);
 
-export async function getCatalogFacets() {
-  const [categories, brands, genders, movements] = await Promise.all([
-    db.category.findMany({ where: { active: true }, orderBy: { sortOrder: "asc" } }),
+export const getCatalogFacets = cached("facets", loadFacets);
+
+async function loadFacets() {
+  const [brands, genders] = await Promise.all([
     db.product.findMany({ where: { active: true }, distinct: ["brand"], select: { brand: true } }),
     db.product.findMany({ where: { active: true }, distinct: ["gender"], select: { gender: true } }),
-    db.product.findMany({ where: { active: true }, distinct: ["movement"], select: { movement: true } }),
   ]);
   return {
-    categories,
     brands: brands.map((item) => item.brand),
     genders: genders.map((item) => item.gender),
-    movements: movements.map((item) => item.movement),
   };
 }

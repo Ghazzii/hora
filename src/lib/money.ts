@@ -1,4 +1,4 @@
-import { DELIVERY_FEE_MILLIMES } from "@/lib/constants";
+import { DELIVERY_FEE_MILLIMES, FREE_DELIVERY_THRESHOLD_MILLIMES } from "@/lib/constants";
 
 export function formatTnd(
   millimes: number,
@@ -15,9 +15,14 @@ export function formatTnd(
   return `${formatted} DT`;
 }
 
-export function addDeliveryFee(subtotalMillimes: number): number {
+/** Delivery costs DELIVERY_FEE_MILLIMES, and nothing once the items reach FREE_DELIVERY_THRESHOLD_MILLIMES. */
+export function deliveryFeeFor(subtotalMillimes: number): number {
   if (!Number.isInteger(subtotalMillimes) || subtotalMillimes < 0) {
     throw new RangeError("Subtotal must be a non-negative integer");
   }
-  return subtotalMillimes + DELIVERY_FEE_MILLIMES;
+  return subtotalMillimes >= FREE_DELIVERY_THRESHOLD_MILLIMES ? 0 : DELIVERY_FEE_MILLIMES;
+}
+
+export function addDeliveryFee(subtotalMillimes: number): number {
+  return subtotalMillimes + deliveryFeeFor(subtotalMillimes);
 }

@@ -1,4 +1,6 @@
 export const DELIVERY_FEE_MILLIMES = 8_000;
+/** Orders whose items reach this subtotal ship free. */
+export const FREE_DELIVERY_THRESHOLD_MILLIMES = 100_000;
 export const MAX_CART_QUANTITY = 10;
 export const SESSION_COOKIE_NAME = "hora_session";
 export const ATTRIBUTION_COOKIE_NAME = "hora_attribution";

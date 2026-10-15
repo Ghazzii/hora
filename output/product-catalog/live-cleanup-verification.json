@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-10-15T22:08:25.420Z",
+  "base": "https://hora-hazel.vercel.app",
+  "health": "connected",
+  "homePhotos": [
+    "versace-green",
+    "calvin-klein-silver"
+  ],
+  "catalog": {
+    "men": 4,
+    "women": 15,
+    "categoryFilter": false,
+    "movementFilter": false,
+    "legacyFiltersIgnored": true
+  },
+  "mobileOverflow": false,
+  "admin": {
+    "login": true,
+    "products": 19,
+    "demosPresent": false,
+    "orders": 0
+  }
+}

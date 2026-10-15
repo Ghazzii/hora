@@ -20,6 +20,11 @@ type CartContextValue = {
   count: number;
   subtotalMillimes: number;
   hydrated: boolean;
+  drawerOpen: boolean;
+  /** Increments on every add so the header badge can animate. */
+  addedTick: number;
+  openDrawer: () => void;
+  closeDrawer: () => void;
   addItem: (item: Omit<CartItem, "quantity">, quantity?: number) => void;
   removeItem: (variantId: string) => void;
   setQuantity: (variantId: string, quantity: number) => void;
@@ -49,6 +54,8 @@ function restoreCart(raw: string): CartItem[] {
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [addedTick, setAddedTick] = useState(0);
 
   useEffect(() => {
     try {
@@ -59,6 +66,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } finally {
       setHydrated(true);
     }
+    // Keep carts consistent across open tabs.
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== STORAGE_KEY) return;
+      try { setItems(event.newValue ? restoreCart(event.newValue) : []); } catch { /* Ignore malformed values. */ }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   useEffect(() => {
@@ -91,6 +105,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           { ...item, quantity: Math.min(maximum, Math.max(1, quantity)) },
         ];
       });
+      setAddedTick((tick) => tick + 1);
       track("AddToCart", {
         productId: item.productId,
         variantId: item.variantId,
@@ -123,6 +138,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const clear = useCallback(() => setItems([]), []);
+  const openDrawer = useCallback(() => setDrawerOpen(true), []);
+  const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
   const value = useMemo(
     () => ({
@@ -133,12 +150,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
         0,
       ),
       hydrated,
+      drawerOpen,
+      addedTick,
+      openDrawer,
+      closeDrawer,
       addItem,
       removeItem,
       setQuantity,
       clear,
     }),
-    [items, hydrated, addItem, removeItem, setQuantity, clear],
+    [items, hydrated, drawerOpen, addedTick, openDrawer, closeDrawer, addItem, removeItem, setQuantity, clear],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

@@ -143,6 +143,8 @@ model Product {
   seoDescriptionEn      String?
   featured              Boolean          @default(false)
   active                Boolean          @default(true)
+  /// Set once the product is imported from the Google Sheets "Products" tab; the sheet then owns it.
+  sheetManaged          Boolean          @default(false)
   averageRating         Float            @default(0)
   createdAt             DateTime         @default(now())
   updatedAt             DateTime         @updatedAt
@@ -183,6 +185,7 @@ model ProductVariant {
   stock                   Int                 @default(0)
   lowStockThreshold       Int                 @default(3)
   active                  Boolean             @default(true)
+  sheetManaged            Boolean             @default(false)
   createdAt               DateTime            @default(now())
   updatedAt               DateTime            @updatedAt
   product                 Product             @relation(fields: [productId], references: [id], onDelete: Cascade)

@@ -5,28 +5,52 @@
 :root {
   color-scheme: light;
   --background: 247 244 238;
-  --foreground: 10 10 10;
+  --foreground: 11 11 10;
+  --header-height: 4rem;
+}
+
+@media (min-width: 640px) {
+  :root { --header-height: 4.5rem; }
 }
 
 * {
-  border-color: rgba(10, 10, 10, 0.12);
+  border-color: rgba(11, 11, 10, 0.1);
 }
 
 html {
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   margin: 0;
-  background: radial-gradient(circle at top right, #fffdf6 0, #f7f4ee 38rem, #f7f4ee 100%);
-  color: #0a0a0a;
-  font-family: Arial, Helvetica, sans-serif;
+  background: #f7f4ee;
+  color: #0b0b0a;
+  font-family: var(--font-sans), system-ui, Arial, sans-serif;
   text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background: #d4af37;
-  color: #0a0a0a;
+  background: #c9a646;
+  color: #0b0b0a;
+}
+
+:focus-visible {
+  outline: 2px solid #c9a646;
+  outline-offset: 2px;
+}
+
+/* Cormorant defaults to old-style figures; prices and stats read better with lining figures.
+   font-feature-settings composes with Tailwind's tabular-nums (font-variant-numeric). */
+.font-display {
+  font-feature-settings: "lnum" 1;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 0.4;
 }
 
 @layer components {
@@ -35,58 +59,184 @@ body {
   }
 
   .section {
-    @apply py-16 sm:py-24;
+    @apply py-12 sm:py-20;
   }
 
   .eyebrow {
-    @apply text-xs font-bold uppercase tracking-[.22em] text-gold-dark;
+    @apply text-[11px] font-bold uppercase tracking-[.24em] text-gold-dark;
   }
 
   .heading-xl {
-    @apply font-display text-4xl leading-tight sm:text-6xl lg:text-7xl;
+    @apply font-display text-5xl font-medium leading-[.95] tracking-[-.01em] sm:text-7xl lg:text-8xl;
   }
 
   .heading-lg {
-    @apply font-display text-3xl leading-tight sm:text-5xl;
+    @apply font-display text-4xl font-medium leading-[1.02] tracking-[-.01em] sm:text-5xl lg:text-6xl;
+  }
+
+  .heading-md {
+    @apply font-display text-3xl font-medium leading-tight sm:text-4xl;
   }
 
   .nav-link {
-    @apply relative text-sm font-semibold after:absolute after:-bottom-2 after:left-0 after:h-px after:w-0 after:bg-gold after:transition-all hover:after:w-full;
+    @apply relative py-2 text-[13px] font-semibold tracking-wide text-ink/80 transition-colors hover:text-ink after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-right after:scale-x-0 after:bg-gold after:transition-transform after:duration-500 after:ease-out hover:after:origin-left hover:after:scale-x-100;
   }
 
   .icon-link {
-    @apply grid h-10 w-10 place-items-center rounded-full transition hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold;
+    @apply relative grid h-10 w-10 place-items-center rounded-full text-ink/85 transition duration-300 ease-out hover:bg-ink/[.06] hover:text-ink active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold;
   }
 
   .count-badge {
-    @apply absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-gold px-1 text-[10px] font-bold text-ink;
+    @apply absolute -right-0.5 -top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-gold px-1 text-[10px] font-bold leading-none text-ink ring-2 ring-ivory;
   }
 
   .label {
-    @apply block text-xs font-bold uppercase tracking-[.14em] text-black/65;
+    @apply block text-[11px] font-bold uppercase tracking-[.16em] text-ink/60;
   }
 
   .field {
-    @apply h-11 w-full rounded-sm border border-black/20 bg-white px-3 text-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20;
+    @apply h-12 w-full rounded-xl border border-ink/15 bg-white px-4 text-[15px] text-ink shadow-[0_1px_0_rgba(11,11,10,.03)] transition duration-200 placeholder:text-ink/35 hover:border-ink/30 focus:border-gold focus:outline-none focus:ring-4 focus:ring-gold/15 disabled:cursor-not-allowed disabled:bg-ink/[.04] aria-[invalid=true]:border-red-600 aria-[invalid=true]:ring-red-600/10 sm:text-sm;
+  }
+
+  textarea.field {
+    @apply h-auto min-h-[6rem] py-3 leading-6;
+  }
+
+  select.field {
+    @apply cursor-pointer appearance-none bg-[length:16px] bg-[right_.9rem_center] bg-no-repeat pr-10;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230b0b0a' stroke-opacity='.55' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  }
+
+  .field-error {
+    @apply mt-1.5 flex items-center gap-1.5 text-xs font-medium text-red-700;
+  }
+
+  .btn {
+    @apply relative inline-flex select-none items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-full font-semibold transition duration-300 ease-out active:scale-[.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn h-12 bg-ink px-7 text-sm text-white hover:bg-[#2a2722] hover:shadow-lift;
+  }
+
+  .btn-gold {
+    @apply btn h-12 bg-gold px-7 text-sm text-ink hover:bg-[#d8b85a] hover:shadow-lift;
+  }
+
+  .btn-outline {
+    @apply btn h-12 border border-ink/20 bg-white/60 px-7 text-sm text-ink hover:border-ink hover:bg-white;
+  }
+
+  .btn-ghost {
+    @apply btn h-10 px-4 text-sm text-ink hover:bg-ink/[.06];
+  }
+
+  .link-underline {
+    @apply relative inline-flex items-center gap-2 font-semibold after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-left after:bg-current after:transition-transform after:duration-500 after:ease-out hover:after:origin-right hover:after:scale-x-0;
+  }
+
+  .card {
+    @apply rounded-2xl border border-ink/[.08] bg-white shadow-soft;
   }
 
   .prose-hora {
-    @apply max-w-3xl text-base leading-8 text-black/70;
+    @apply max-w-3xl text-base leading-8 text-ink/70;
+  }
+
+  .prose-hora h2 {
+    @apply mt-10 font-display text-3xl font-medium text-ink;
   }
 
   .admin-card {
-    @apply rounded-2xl border border-black/10 bg-white p-5 shadow-sm;
+    @apply rounded-2xl border border-ink/[.08] bg-white p-5 shadow-soft sm:p-6;
+  }
+
+  .skeleton {
+    @apply animate-shimmer rounded-xl bg-[linear-gradient(90deg,rgba(11,11,10,.06)_0%,rgba(11,11,10,.11)_50%,rgba(11,11,10,.06)_100%)] bg-[length:200%_100%];
   }
 
   .skip-link {
-    @apply fixed left-4 top-4 z-[100] -translate-y-20 bg-ink px-4 py-3 text-sm font-bold text-white transition focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-gold;
+    @apply fixed left-4 top-4 z-[100] -translate-y-20 rounded-full bg-ink px-5 py-3 text-sm font-bold text-white transition focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-gold;
+  }
+
+  .sticky-below-header {
+    top: var(--header-height);
+    transition: top 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  [data-header-hidden="true"] .sticky-below-header {
+    top: 0;
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .grain {
+    @apply pointer-events-none absolute inset-0 opacity-[.07] mix-blend-overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 }
 
+/* Scroll reveal. Content is only hidden once JavaScript has confirmed it can reveal it again. */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  .js [data-reveal="fade"] {
+    transform: none;
+  }
+
+  .js [data-reveal="scale"] {
+    transform: scale(0.97);
+  }
+
+  .js [data-reveal][data-visible="true"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Watch hands for the live hero clock. */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-14px) rotate(1deg); }
+}
+
+@keyframes sweep {
+  to { transform: rotate(360deg); }
+}
+
+.watch-hand {
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.watch-second {
+  animation: sweep 60s linear infinite;
+  animation-delay: var(--second-delay, 0s);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .watch-second {
+    animation: none;
   }
 }

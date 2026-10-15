@@ -1,0 +1,20 @@
+{
+  "deletedOrders": 7,
+  "deletedDemoProducts": 8,
+  "restoredUnits": 1,
+  "genderAssignmentsUpdated": 19,
+  "clearedSheetRows": 3,
+  "remainingOrders": 0,
+  "remainingProducts": 19,
+  "remainingDemoProducts": 0,
+  "genders": [
+    {
+      "_count": 15,
+      "gender": "Femme"
+    },
+    {
+      "_count": 4,
+      "gender": "Homme"
+    }
+  ]
+}

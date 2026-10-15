@@ -1,0 +1,12 @@
+{
+  "draftProducts": 19,
+  "orderedImages": 76,
+  "openingStockMovements": 19,
+  "exampleStockPerWatch": 10,
+  "priceRangeTnd": [
+    99,
+    149
+  ],
+  "repeatImportDuplicates": 0,
+  "originalPhotosPreserved": 63
+}

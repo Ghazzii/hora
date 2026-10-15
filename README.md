@@ -68,6 +68,15 @@ The admin account is marked as requiring a password change. These values are for
 
 Delivery is fixed at **8 DT (8,000 millimes)**. Money is stored as integer millimes; no floating-point prices are persisted.
 
+## Admin at a glance
+
+- **Dashboard** — orders and order value vs the previous week, a 14-day orders chart, the pipeline by status, customers waiting for a confirmation call (one-tap **Call** / **WhatsApp**), Google Sheets sync health and low stock.
+- **Orders** — status tabs with counts, phone-aware search, source and date filters, one-click next step (Confirm → Start preparing → Mark shipped → Mark delivered), cancellation with confirmation, CSV export (Excel-friendly).
+- **Products** — photos (upload to Supabase Storage or URL), FR/EN copy, specs, compare-at price, visibility, featured, and per-product options (variants).
+- **Inventory** — logged stock adjustments with reasons, low-stock and sold-out views.
+- **Customers** — buyers grouped by phone (guests included) with repeat-customer flags, plus registered accounts.
+- **Reviews** and **Analytics** (funnel, governorates, top watches, sources over 7/30/90 days).
+
 ## Main routes
 
 - `/fr`, `/en` — localized storefront

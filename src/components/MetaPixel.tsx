@@ -48,10 +48,10 @@ t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
 (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init','${pixelId}');fbq('track','PageView');`}
     </Script>}
-    {open ? <div role="dialog" aria-label={french ? "Préférences marketing" : "Marketing preferences"} className="fixed bottom-4 left-4 right-4 z-50 max-w-md rounded-xl border border-black/15 bg-white p-5 shadow-luxury sm:right-auto">
+    {open ? <div role="dialog" aria-label={french ? "Préférences marketing" : "Marketing preferences"} className="fixed bottom-4 left-4 right-4 z-50 max-w-md animate-fade-up rounded-2xl border border-ink/10 bg-white p-5 shadow-luxury sm:right-auto">
       <p className="font-semibold">{french ? "Préférences marketing" : "Marketing preferences"}</p>
-      <p className="mt-2 text-sm leading-6 text-black/65">{french ? "Autorisez Meta Pixel à mesurer les visites et les achats. Vous pouvez refuser et continuer à utiliser Hora." : "Allow Meta Pixel to measure visits and shopping events. You can decline and still use Hora."}</p>
-      <div className="mt-4 flex gap-3"><button type="button" className="min-h-11 flex-1 border border-black/20 px-4 text-sm font-semibold" onClick={() => choose("rejected")}>{french ? "Refuser" : "Decline"}</button><button type="button" className="min-h-11 flex-1 bg-ink px-4 text-sm font-semibold text-white" onClick={() => choose("accepted")}>{french ? "Autoriser" : "Allow"}</button></div>
-    </div> : <button type="button" className="fixed bottom-3 left-3 z-40 rounded-full border border-black/20 bg-white px-3 py-2 text-xs shadow-sm" onClick={() => setOpen(true)}>{french ? "Préférences marketing" : "Marketing preferences"}</button>}
+      <p className="mt-2 text-sm leading-6 text-ink/65">{french ? "Autorisez Meta Pixel à mesurer les visites et les achats. Vous pouvez refuser et continuer à utiliser Hora." : "Allow Meta Pixel to measure visits and shopping events. You can decline and still use Hora."}</p>
+      <div className="mt-4 flex gap-3"><button type="button" className="btn-outline h-11 flex-1 px-4" onClick={() => choose("rejected")}>{french ? "Refuser" : "Decline"}</button><button type="button" className="btn-primary h-11 flex-1 px-4" onClick={() => choose("accepted")}>{french ? "Autoriser" : "Allow"}</button></div>
+    </div> : <button type="button" className="fixed bottom-3 left-3 z-20 rounded-full border border-ink/10 bg-white/90 px-3 py-2 text-[11px] text-ink/70 shadow-soft backdrop-blur transition hover:text-ink" onClick={() => setOpen(true)}>{french ? "Préférences marketing" : "Marketing preferences"}</button>}
   </>;
 }

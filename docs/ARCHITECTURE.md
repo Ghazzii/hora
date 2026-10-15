@@ -23,6 +23,14 @@ Order items snapshot names, slugs, SKUs, variant labels, images and prices so hi
 
 A random 256-bit session token is stored only in an httpOnly cookie. PostgreSQL stores its SHA-256 hash and expiry. Passwords use bcrypt cost 12. Admin pages and every server action independently enforce the ADMIN role.
 
+## Caching
+
+Storefront catalog reads (`src/lib/products.ts`) are cached with `unstable_cache` under the `catalog` tag for up to five minutes. Every change shoppers can see — checkout stock decrements, admin product/price/variant/inventory edits, restocking cancellations and review moderation — calls `revalidateCatalog()` so the next request reads fresh data. Checkout never trusts cached values: it re-reads stock and prices inside its serializable transaction. If the database is briefly unreachable, cached catalog pages keep serving.
+
+## Admin feedback
+
+Admin mutations are server actions returning `ActionState`; `ActionForm` shows the result as a toast and `SubmitButton` shows a pending spinner. Expected failures (invalid transitions, validation, conflicts) become readable messages instead of error pages.
+
 ## Money
 
 All persisted and calculated values use integer millimes. `329000` means `329.000 DT`. The delivery constant is `8000`.

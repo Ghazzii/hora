@@ -19,7 +19,8 @@ export const checkoutSchema = z.object({
   phone: z.string().trim().refine(isTunisianPhone, "Invalid Tunisian phone number"),
   governorate: z.enum(TUNISIAN_GOVERNORATES),
   city: z.string().trim().min(2).max(100),
-  postalCode: z.string().trim().regex(/^\d{4}$/, "Postal code must contain 4 digits"),
+  // Optional: many customers don't know theirs. Stored as "" when left blank.
+  postalCode: z.string().trim().regex(/^(\d{4})?$/, "Postal code must contain 4 digits").optional().default(""),
   addressLine1: z.string().trim().min(5).max(200),
   addressLine2: z.string().trim().max(200).optional(),
   deliveryInstructions: z.string().trim().max(500).optional(),

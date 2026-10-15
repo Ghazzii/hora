@@ -12,6 +12,7 @@ import { normalizeTunisianPhone } from "@/lib/phone";
 import { checkoutSchema, type CheckoutInput } from "@/lib/validation";
 import { calculateOrderPricing } from "@/lib/order-pricing";
 import { orderSheetRow } from "@/lib/order-sheet-row";
+import { queueOrderSheetRefresh } from "@/lib/google-sheets";
 import {
   canTransitionOrder,
   transitionRestocks,
@@ -316,6 +317,28 @@ export async function transitionOrder(
         note: note?.slice(0, 500),
       },
     });
-    return updated;
+    // Keep the order's spreadsheet row in step with its new status, atomically.
+    await queueOrderSheetRefresh(order.id, tx);
+    return { ...updated, restocked: restock };
   }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+}
+
+export async function updatePaymentStatus(orderId: string, paymentStatus: PaymentStatus, actorUserId: string) {
+  return db.$transaction(async (tx) => {
+    const order = await tx.order.findUnique({ where: { id: orderId } });
+    if (!order) throw new OrderError("Order not found", "NOT_FOUND", 404);
+    if (order.paymentStatus === paymentStatus) return order;
+    const updated = await tx.order.update({ where: { id: orderId }, data: { paymentStatus } });
+    await tx.orderStatusHistory.create({
+      data: {
+        orderId,
+        fromStatus: order.status,
+        toStatus: order.status,
+        actorUserId,
+        note: `COD payment status changed to ${paymentStatus}`,
+      },
+    });
+    await queueOrderSheetRefresh(orderId, tx);
+    return updated;
+  });
 }

@@ -1,0 +1,16 @@
+# Deploy the application and optimized product assets.
+.git/
+.next/
+.vercel/
+node_modules/
+.env*
+hora pics/
+output/
+coverage/
+playwright-report/
+test-results/
+*.db
+*.db-journal
+*service-account*.json
+*.log
+tsconfig.tsbuildinfo

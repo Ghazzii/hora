@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Order, OrderItem } from "@prisma/client";
-import { orderSheetRange, orderSheetRow, ORDER_SHEET_HEADERS } from "./order-sheet-row";
+import { orderSheetHeaderRange, orderSheetRange, orderSheetRow, ORDER_SHEET_HEADERS } from "./order-sheet-row";
 
 describe("order export data", () => {
   it("preserves phone and postal text and converts millimes to TND", () => {
@@ -17,9 +17,13 @@ describe("order export data", () => {
     expect(row.slice(15, 18)).toEqual([329, 8, 337]);
     expect(row[14]).toContain("x2");
     expect(row[6]).toBe("");
+    // Orders without explicit status data default to a freshly placed order.
+    expect(row.slice(-3)).toEqual(["PENDING", "UNPAID", "2026-10-08T08:00:00.000Z"]);
   });
   it("escapes sheet names and reserves row one for headers", () => {
-    expect(orderSheetRange("Hora's orders", 1)).toBe("'Hora''s orders'!A2:T2");
+    expect(orderSheetRange("Hora's orders", 1)).toBe("'Hora''s orders'!A2:W2");
+    expect(orderSheetHeaderRange("Orders")).toBe("'Orders'!A1:W1");
+    expect(ORDER_SHEET_HEADERS).toHaveLength(23);
     expect(() => orderSheetRange("Orders", 0)).toThrow();
   });
 });

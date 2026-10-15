@@ -19,3 +19,6 @@ test-results
 *.db-journal
 
 tsconfig.tsbuildinfo
+
+# Keep generated image masters locally; the app serves optimized WebP assets.
+output/product-catalog/generated/

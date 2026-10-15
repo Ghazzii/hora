@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { checkoutSchema } from "@/lib/validation";
+import { TUNISIAN_GOVERNORATES } from "@/lib/constants";
+import { TUNISIAN_CITIES } from "@/lib/tunisia-cities";
 
 const valid = {
   idempotencyKey: "1234567890abcdef",
@@ -29,5 +31,23 @@ describe("checkout schema", () => {
         codAccepted: false,
       }).success,
     ).toBe(false);
+  });
+
+  it("makes the postal code optional but still checks one that is given", () => {
+    expect(checkoutSchema.parse({ ...valid, postalCode: undefined }).postalCode).toBe("");
+    expect(checkoutSchema.parse({ ...valid, postalCode: "  " }).postalCode).toBe("");
+    expect(checkoutSchema.safeParse({ ...valid, postalCode: "207" }).success).toBe(false);
+    expect(checkoutSchema.safeParse({ ...valid, postalCode: "20a0" }).success).toBe(false);
+  });
+});
+
+describe("checkout city lists", () => {
+  it("lists cities for exactly the 24 governorates, sorted and without duplicates", () => {
+    expect(Object.keys(TUNISIAN_CITIES).sort()).toEqual([...TUNISIAN_GOVERNORATES].sort());
+    for (const [governorate, cities] of Object.entries(TUNISIAN_CITIES)) {
+      expect(cities.length, governorate).toBeGreaterThan(3);
+      expect(new Set(cities).size, governorate).toBe(cities.length);
+      expect([...cities], governorate).toEqual([...cities].sort((a, b) => a.localeCompare(b, "fr")));
+    }
   });
 });

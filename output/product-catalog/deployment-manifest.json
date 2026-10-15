@@ -1,0 +1,502 @@
+{
+  "target": "https://hora-hazel.vercel.app",
+  "products": [
+    {
+      "sku": "HP-CALVIN-KLEIN-SILVER",
+      "slug": "calvin-klein-silver",
+      "examplePriceTnd": 119,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-CALVIN-KLEIN-GOLD",
+      "slug": "calvin-klein-gold",
+      "examplePriceTnd": 119,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-CASIO-BLACK",
+      "slug": "casio-black",
+      "examplePriceTnd": 109,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-CASIO-TWO-TONE",
+      "slug": "casio-two-tone",
+      "examplePriceTnd": 99,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-DIOR-GOLD",
+      "slug": "dior-gold",
+      "examplePriceTnd": 129,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-DIOR-TWO-TONE",
+      "slug": "dior-two-tone",
+      "examplePriceTnd": 129,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-FERRAGAMO-GOLD",
+      "slug": "ferragamo-gold",
+      "examplePriceTnd": 139,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-GUCCI-GREEN",
+      "slug": "gucci-green",
+      "examplePriceTnd": 139,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-GUCCI-ROUND",
+      "slug": "gucci-round",
+      "examplePriceTnd": 139,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-ROLEX-RECTANGLE",
+      "slug": "rolex-rectangle",
+      "examplePriceTnd": 149,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-SNILLE-BLACK-SILVER",
+      "slug": "snille-black-silver",
+      "examplePriceTnd": 119,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-SNILLE-WHITE-SILVER",
+      "slug": "snille-white-silver",
+      "examplePriceTnd": 119,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-SNILLE-WHITE-BLACK",
+      "slug": "snille-white-black",
+      "examplePriceTnd": 119,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-SUNLIFEX-HEXAGON",
+      "slug": "sunlifex-hexagon",
+      "examplePriceTnd": 99,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-SWAN-TURQUOISE",
+      "slug": "swan-turquoise",
+      "examplePriceTnd": 109,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-TORY-TWO-TONE",
+      "slug": "tory-two-tone",
+      "examplePriceTnd": 119,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-TORY-SILVER",
+      "slug": "tory-silver",
+      "examplePriceTnd": 119,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-VERSACE-GREEN",
+      "slug": "versace-green",
+      "examplePriceTnd": 149,
+      "exampleStock": 10
+    },
+    {
+      "sku": "HP-VERSACE-CHAMPAGNE",
+      "slug": "versace-champagne",
+      "examplePriceTnd": 149,
+      "exampleStock": 10
+    }
+  ],
+  "files": [
+    {
+      "path": "public/images/products/calvin-klein-silver/01-studio.webp",
+      "bytes": 224652,
+      "sha256": "de2589925b932362a9c75c03dee20869a6670033f2ec13db93ad9cd499a0cdc7"
+    },
+    {
+      "path": "public/images/products/calvin-klein-silver/02-angle.webp",
+      "bytes": 214976,
+      "sha256": "f83453e13bee6b4b05164e682c7cc6f8c78366d9c14b06640ff7197d599fd255"
+    },
+    {
+      "path": "public/images/products/calvin-klein-silver/03-detail.webp",
+      "bytes": 243798,
+      "sha256": "b3676b4d6d5fc858edd7ecac3c2bb580035d58d8290ac69cf70abd1e767914f9"
+    },
+    {
+      "path": "public/images/products/calvin-klein-silver/04-editorial.webp",
+      "bytes": 258008,
+      "sha256": "49d87ab2949953277898f4f6e8ff0d0c68b1514d2893770cafee5011f4c97dc0"
+    },
+    {
+      "path": "public/images/products/calvin-klein-gold/01-studio.webp",
+      "bytes": 241386,
+      "sha256": "2fd1ab6d1a56593af7fb9f25729d1f31f1f93ec06d5b41ba806370a6effdca32"
+    },
+    {
+      "path": "public/images/products/calvin-klein-gold/02-angle.webp",
+      "bytes": 297124,
+      "sha256": "e5b4651338888bd33c039f25de3ec39be2d99b6d096d1dccd819fb64074871f4"
+    },
+    {
+      "path": "public/images/products/calvin-klein-gold/03-detail.webp",
+      "bytes": 302796,
+      "sha256": "999251627662cf415abbc296166bf858420842ef2c61d7e51c2a405fa83673c8"
+    },
+    {
+      "path": "public/images/products/calvin-klein-gold/04-editorial.webp",
+      "bytes": 286054,
+      "sha256": "85092fb911f4ffcde7242409980aeed14093454a8d1d99ec1fd72c11522719e3"
+    },
+    {
+      "path": "public/images/products/casio-black/01-studio.webp",
+      "bytes": 215720,
+      "sha256": "911cba706210c0c6a10c9dd3c9ee7daddd3244a295d752cf228c86b2c0a4adda"
+    },
+    {
+      "path": "public/images/products/casio-black/02-angle.webp",
+      "bytes": 244180,
+      "sha256": "bf4b76ca3078b3d394d99d0ae48762e382b489d2d059c1d66677c2e28e088081"
+    },
+    {
+      "path": "public/images/products/casio-black/03-detail.webp",
+      "bytes": 247766,
+      "sha256": "158d9d4170bc820aed2deee9f1e2a6211636e4500d14acce352e811921aa81a2"
+    },
+    {
+      "path": "public/images/products/casio-black/04-editorial.webp",
+      "bytes": 262468,
+      "sha256": "43afcdc9b933882d1be524c65fdbc2c2327d34e4e9baf88ca16ae4ec0d2bd752"
+    },
+    {
+      "path": "public/images/products/casio-two-tone/01-studio.webp",
+      "bytes": 195464,
+      "sha256": "e085591cc0d04c8eccc07bcb5f1bb14b1cf89c182db68974e6e2b9e18c731a46"
+    },
+    {
+      "path": "public/images/products/casio-two-tone/02-angle.webp",
+      "bytes": 225914,
+      "sha256": "7ef6c8f2c7816eeb146b90cc1ba73ca454be918c214f20e17b8ead7fc21d2f47"
+    },
+    {
+      "path": "public/images/products/casio-two-tone/03-detail.webp",
+      "bytes": 251124,
+      "sha256": "4072937e5e68abf2d1b08ad1c50e1109258c0211effbd01aca78c44039e364a5"
+    },
+    {
+      "path": "public/images/products/casio-two-tone/04-editorial.webp",
+      "bytes": 253392,
+      "sha256": "452f0f2bdeba09d1e09a8d3202cb1c1520e41edc5987476d21673c6f79cb1e25"
+    },
+    {
+      "path": "public/images/products/dior-gold/01-studio.webp",
+      "bytes": 189204,
+      "sha256": "c3b714ec102256f74825dadb934a9b05c5e281a174306d356289b7ddc9817850"
+    },
+    {
+      "path": "public/images/products/dior-gold/02-angle.webp",
+      "bytes": 198902,
+      "sha256": "b0b4fdd6ae85f150754a9fb18fcb1000aabb87e7d574a13a9f171505dfe93286"
+    },
+    {
+      "path": "public/images/products/dior-gold/03-detail.webp",
+      "bytes": 235860,
+      "sha256": "f5b21ac78132ca52b98d481afb450a8be51cf090585a61b509922e6f1cfe5e9b"
+    },
+    {
+      "path": "public/images/products/dior-gold/04-editorial.webp",
+      "bytes": 244528,
+      "sha256": "8071e0d46f56f71c4e4f177e5e5d4caf30544defbc4e919f80b662fbd8470c6b"
+    },
+    {
+      "path": "public/images/products/dior-two-tone/01-studio.webp",
+      "bytes": 197752,
+      "sha256": "0e4791732b65ce00b605b8c1e132d3f87729612db463dd1b28be8877eaed6e29"
+    },
+    {
+      "path": "public/images/products/dior-two-tone/02-angle.webp",
+      "bytes": 204758,
+      "sha256": "a7e94114d157096b165b2abc4aa273d877fe8b02525d6037a16c243200da09ff"
+    },
+    {
+      "path": "public/images/products/dior-two-tone/03-detail.webp",
+      "bytes": 248972,
+      "sha256": "d8863271f17091f05b43712087f2b7b48dbd78fbd1355c0f0cb62e8f7b585aff"
+    },
+    {
+      "path": "public/images/products/dior-two-tone/04-editorial.webp",
+      "bytes": 255866,
+      "sha256": "b617ba81d397c146441eaf9676618eae0f36db98af1c71e40ae4976edd7b6e58"
+    },
+    {
+      "path": "public/images/products/ferragamo-gold/01-studio.webp",
+      "bytes": 246548,
+      "sha256": "726895204607324c9c92039c11361e4f7f98fe084001e542a5475048f57d4ac2"
+    },
+    {
+      "path": "public/images/products/ferragamo-gold/02-angle.webp",
+      "bytes": 251522,
+      "sha256": "d79cc2c5a9a77538727739a663f53e14902108d2b9af9a94f23360583c8607f6"
+    },
+    {
+      "path": "public/images/products/ferragamo-gold/03-detail.webp",
+      "bytes": 251056,
+      "sha256": "3bde9c043a5bba91931b700560ceef7f460cf9137cfbf0b58683a61e00ce8893"
+    },
+    {
+      "path": "public/images/products/ferragamo-gold/04-editorial.webp",
+      "bytes": 284560,
+      "sha256": "26a90802b09a7a56631673e316bf27eb7de8a70a69a76605b934f007bb8400fb"
+    },
+    {
+      "path": "public/images/products/gucci-green/01-studio.webp",
+      "bytes": 243606,
+      "sha256": "591affb619066f5d74fb01c057266bdd1ddf4b65cab6806b3670b82618c961d0"
+    },
+    {
+      "path": "public/images/products/gucci-green/02-angle.webp",
+      "bytes": 231044,
+      "sha256": "1fec4476bc5c0898bb88663c3e5d0511121a81cb137bd0be9bf0cb9bf57d995d"
+    },
+    {
+      "path": "public/images/products/gucci-green/03-detail.webp",
+      "bytes": 269994,
+      "sha256": "bdab8a457b0996e41c858beb31814082b2e4a4935eada0f7886cedffe6a84e99"
+    },
+    {
+      "path": "public/images/products/gucci-green/04-editorial.webp",
+      "bytes": 279926,
+      "sha256": "e7459e4293f0819e8fcf1b7edfed234afb96a3d0976c2ae4f12127d209b10b44"
+    },
+    {
+      "path": "public/images/products/gucci-round/01-studio.webp",
+      "bytes": 219920,
+      "sha256": "f36703165e61c67b659fd442dea8320b71d98fbe35f9c8adfe5e1bb8ac229e22"
+    },
+    {
+      "path": "public/images/products/gucci-round/02-angle.webp",
+      "bytes": 284842,
+      "sha256": "c24f42e829e6734b977a1538a5decfa4bb30940fd01bb0c0e265abdf78d8ad5f"
+    },
+    {
+      "path": "public/images/products/gucci-round/03-detail.webp",
+      "bytes": 291598,
+      "sha256": "5ebd20fa800d5a177338bacca699b89a2897dce2adc8fcc8d911a4b403c5b467"
+    },
+    {
+      "path": "public/images/products/gucci-round/04-editorial.webp",
+      "bytes": 267990,
+      "sha256": "912fd74f9bdbe8d6943950e2a820878a2f4bcc099920d62cf84e4afabcdec56c"
+    },
+    {
+      "path": "public/images/products/rolex-rectangle/01-studio.webp",
+      "bytes": 241832,
+      "sha256": "d0c3f34edcc6de274ec2898ac812eb803da1325cebdc6c6855ea03fb438b304f"
+    },
+    {
+      "path": "public/images/products/rolex-rectangle/02-angle.webp",
+      "bytes": 253058,
+      "sha256": "1c3f07e38eb865f4e4881671cefcf02927b6cc3dba614ef848cef8d3ff8b446f"
+    },
+    {
+      "path": "public/images/products/rolex-rectangle/03-detail.webp",
+      "bytes": 308030,
+      "sha256": "62611bdec7294270c0b8f1c478c2f756cd477aabc8d10ac0d178712007eb123c"
+    },
+    {
+      "path": "public/images/products/rolex-rectangle/04-editorial.webp",
+      "bytes": 256382,
+      "sha256": "fb61159a449c25af29b3ace38df74f7921f647928b0d79c60e598cc57ed15008"
+    },
+    {
+      "path": "public/images/products/snille-black-silver/01-studio.webp",
+      "bytes": 198450,
+      "sha256": "50be8ab4264734f6ec599d7dd70d50fcec226f8c4faf078dd2e63c00e3c4c983"
+    },
+    {
+      "path": "public/images/products/snille-black-silver/02-angle.webp",
+      "bytes": 199878,
+      "sha256": "1bf347461ac1d5b71c2ba9de474068d6a9cd28b5b319d7ab201277b57651be7c"
+    },
+    {
+      "path": "public/images/products/snille-black-silver/03-detail.webp",
+      "bytes": 231802,
+      "sha256": "decdf7a778d4b4118ae1e93ea4d620d367ed8c9508710f1b689a1ee019cb9554"
+    },
+    {
+      "path": "public/images/products/snille-black-silver/04-editorial.webp",
+      "bytes": 231128,
+      "sha256": "2254b23e26d02da4fe4045bad982e0ddde58eb628f7f1d4ae36d651ca17be724"
+    },
+    {
+      "path": "public/images/products/snille-white-silver/01-studio.webp",
+      "bytes": 166544,
+      "sha256": "fa99d626b8b5538dc16a722be1492e6e20335a5311e10039e963a66151ba28b1"
+    },
+    {
+      "path": "public/images/products/snille-white-silver/02-angle.webp",
+      "bytes": 204376,
+      "sha256": "ed2b3d408fc0da616bd915a03cd77f8d99e5d749c9e021961594b2fd850ea1eb"
+    },
+    {
+      "path": "public/images/products/snille-white-silver/03-detail.webp",
+      "bytes": 240424,
+      "sha256": "64b36efd049971cf9f2805477718241a81730084c22000a3a80c5574f9b93779"
+    },
+    {
+      "path": "public/images/products/snille-white-silver/04-editorial.webp",
+      "bytes": 254978,
+      "sha256": "42148481a7f01a80cfbdffd28d65c1fabb5e862d9c049ae80dcaf4f245dd988f"
+    },
+    {
+      "path": "public/images/products/snille-white-black/01-studio.webp",
+      "bytes": 171894,
+      "sha256": "3cd1c6fd520f8bb548acd6e1a5f492bdbf94dfb5e6151f672e1329ef59aa1761"
+    },
+    {
+      "path": "public/images/products/snille-white-black/02-angle.webp",
+      "bytes": 207772,
+      "sha256": "fceb2b8361571991a92076cce8fd332074ab411da7eccd0f34a75013f4415ea8"
+    },
+    {
+      "path": "public/images/products/snille-white-black/03-detail.webp",
+      "bytes": 221096,
+      "sha256": "6afa6774ab28e8a79a40dc1d647fd2a9fc3f2d33b2cb5c9db1522b04786902b1"
+    },
+    {
+      "path": "public/images/products/snille-white-black/04-editorial.webp",
+      "bytes": 256736,
+      "sha256": "c4a67410c20f2106bee939daae1719d45e9a64ecfd99073ddbd8409d89ba6bc2"
+    },
+    {
+      "path": "public/images/products/sunlifex-hexagon/01-studio.webp",
+      "bytes": 201580,
+      "sha256": "155019088a714706cce2b4f3fb4b796868fe8a286bfc482e567fd0ed5630ac5b"
+    },
+    {
+      "path": "public/images/products/sunlifex-hexagon/02-angle.webp",
+      "bytes": 230254,
+      "sha256": "6e424f8df59b6acd90e61e4f5e3f81155d1c37bd1eb66a69200516426d871894"
+    },
+    {
+      "path": "public/images/products/sunlifex-hexagon/03-detail.webp",
+      "bytes": 235176,
+      "sha256": "5dd91b4dfa50a11558124f2216cc45c286e598075b78dd6c5f160fb96a2005b9"
+    },
+    {
+      "path": "public/images/products/sunlifex-hexagon/04-editorial.webp",
+      "bytes": 238380,
+      "sha256": "3082bc0eb7e2d9f7093b5445e4a333edf01dbfb6d11dde0ec0250c5def0b897b"
+    },
+    {
+      "path": "public/images/products/swan-turquoise/01-studio.webp",
+      "bytes": 190608,
+      "sha256": "a3b825bb9c2634c27be48957ee132c8ba35627b2037d94809d4cb8786cb2884d"
+    },
+    {
+      "path": "public/images/products/swan-turquoise/02-angle.webp",
+      "bytes": 217002,
+      "sha256": "b520fc1873a55f3a7dbe0ef54514bc8c6113240ca734b21d1f982262e858ab8b"
+    },
+    {
+      "path": "public/images/products/swan-turquoise/03-detail.webp",
+      "bytes": 238104,
+      "sha256": "f58f015bf2461aab4f77a22f750a50f1db70aea24a333d9517158cdd8be64c2a"
+    },
+    {
+      "path": "public/images/products/swan-turquoise/04-editorial.webp",
+      "bytes": 238324,
+      "sha256": "b3e62ecbfb6922d93c7438a1d00301b4e56295ccc1a44be0bb388bb631a41722"
+    },
+    {
+      "path": "public/images/products/tory-two-tone/01-studio.webp",
+      "bytes": 222500,
+      "sha256": "2195af6ffe82d3abe8ee4fa84ced8064370a9edd662cd97b0f1cdd90592ac113"
+    },
+    {
+      "path": "public/images/products/tory-two-tone/02-angle.webp",
+      "bytes": 238486,
+      "sha256": "3d02bb27ce0bf155e6f1dfe4eddfa041fda77b54d9395c95e288f4faf63d265c"
+    },
+    {
+      "path": "public/images/products/tory-two-tone/03-detail.webp",
+      "bytes": 262108,
+      "sha256": "9d4271d53c0f2d67b81d15e83d68f9956cc9aec2ea4e3b0f58ae4c29063702dd"
+    },
+    {
+      "path": "public/images/products/tory-two-tone/04-editorial.webp",
+      "bytes": 262586,
+      "sha256": "0a9b07cc1f9b05577838509e1eecc5419f85fec85d6952e94bfc7069a204efbf"
+    },
+    {
+      "path": "public/images/products/tory-silver/01-studio.webp",
+      "bytes": 230142,
+      "sha256": "467fc10e67cc1c1932f0f1dfb5016e8d9af9257128d11d29d0d14b8b7751ed12"
+    },
+    {
+      "path": "public/images/products/tory-silver/02-angle.webp",
+      "bytes": 244564,
+      "sha256": "04f1cdd361fca710335d68a3f2a86bf03cf517359bd33a30cd89b201edb644c0"
+    },
+    {
+      "path": "public/images/products/tory-silver/03-detail.webp",
+      "bytes": 217070,
+      "sha256": "8bb35eb15150a35dc58a4077dc07238007c9282393d9ddb5ed8570dbc19878d2"
+    },
+    {
+      "path": "public/images/products/tory-silver/04-editorial.webp",
+      "bytes": 246456,
+      "sha256": "849f5dda699769cbe1385e3e0b1d8fa33b0fc2a3de0de7e9957bce407deb2df0"
+    },
+    {
+      "path": "public/images/products/versace-green/01-studio.webp",
+      "bytes": 235862,
+      "sha256": "d775be9d49b864f5bcedef343fccf4a73e44ad503e3d9c8ab2d94c6367a93fd8"
+    },
+    {
+      "path": "public/images/products/versace-green/02-angle.webp",
+      "bytes": 232860,
+      "sha256": "4aa9a4c79f127b81362d7b42e9250234dc155143980024e12b63d342885568ea"
+    },
+    {
+      "path": "public/images/products/versace-green/03-detail.webp",
+      "bytes": 300386,
+      "sha256": "f2e16bad8dbd83b62b4c0042e4c26ab25ff4dd8dc4316a5c5b6df3aa9f3080a6"
+    },
+    {
+      "path": "public/images/products/versace-green/04-editorial.webp",
+      "bytes": 420344,
+      "sha256": "a5f1205a1284c3b64242b7992e054462147bab2a0c419e94c3e9f92bf87a9f65"
+    },
+    {
+      "path": "public/images/products/versace-champagne/01-studio.webp",
+      "bytes": 224462,
+      "sha256": "18ae8e73b6abef09386a492b82d620f4935e3c107567abd3c437a38c798c26c6"
+    },
+    {
+      "path": "public/images/products/versace-champagne/02-angle.webp",
+      "bytes": 268324,
+      "sha256": "99536c3cfba9dd9b32ecc0756e008b55f5bb021c95b200d453c1184900a71d33"
+    },
+    {
+      "path": "public/images/products/versace-champagne/03-detail.webp",
+      "bytes": 266288,
+      "sha256": "ef4e47c5413fb28ef230805d6f31a197c9ff75d749f72e324bf02dcbb5f64f23"
+    },
+    {
+      "path": "public/images/products/versace-champagne/04-editorial.webp",
+      "bytes": 305594,
+      "sha256": "b5780f79a2ca688a4d8d6bae0d583d5ddebe606d6eb5ffa1ecfc4359f69b430e"
+    }
+  ],
+  "totalBytes": 18475110
+}

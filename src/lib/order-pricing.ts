@@ -1,4 +1,4 @@
-import { DELIVERY_FEE_MILLIMES } from "@/lib/constants";
+import { deliveryFeeFor } from "@/lib/money";
 
 export type PriceLine = {
   unitPriceMillimes: number;
@@ -18,9 +18,10 @@ export function calculateOrderPricing(lines: PriceLine[]) {
     }
     return total + line.unitPriceMillimes * line.quantity;
   }, 0);
+  const deliveryFeeMillimes = deliveryFeeFor(subtotalMillimes);
   return {
     subtotalMillimes,
-    deliveryFeeMillimes: DELIVERY_FEE_MILLIMES,
-    totalMillimes: subtotalMillimes + DELIVERY_FEE_MILLIMES,
+    deliveryFeeMillimes,
+    totalMillimes: subtotalMillimes + deliveryFeeMillimes,
   };
 }

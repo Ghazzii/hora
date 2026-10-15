@@ -28,7 +28,10 @@
     "build:vercel": "npm run production:check && prisma generate && next build",
     "db:admin": "tsx scripts/create-admin.ts",
     "production:check": "node scripts/check-production-env.mjs",
-    "db:sheets:backfill": "tsx scripts/backfill-order-sheets.ts"
+    "db:sheets:backfill": "tsx scripts/backfill-order-sheets.ts",
+    "catalog:check": "tsx scripts/import-watch-catalog.ts",
+    "catalog:import": "tsx scripts/import-watch-catalog.ts --apply",
+    "catalog:images": "node scripts/finalize-watch-images.mjs && node scripts/create-watch-review.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -7,6 +7,7 @@ import { ATTRIBUTION_COOKIE_NAME } from "@/lib/constants";
 import { getCurrentUser } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { syncOrderSheets } from "@/lib/google-sheets";
+import { revalidateCatalog } from "@/lib/cache";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -23,6 +24,8 @@ export async function POST(request: NextRequest) {
     const [cookieStore, user] = await Promise.all([cookies(), getCurrentUser()]);
     const attribution = parseAttributionCookie(cookieStore.get(ATTRIBUTION_COOKIE_NAME)?.value);
     const result = await createOrder(parsed.data, attribution, user?.id);
+    // Stock just changed: storefront availability must not be served from cache.
+    if (!result.reused) revalidateCatalog();
     after(async () => {
       try { await syncOrderSheets(result.orderId); }
       catch { console.error("Order sheet sync unavailable; cron will retry"); }
